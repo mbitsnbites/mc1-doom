@@ -79,7 +79,8 @@ OBJS=					\
 		$(O)/z_zone.o		\
 		$(O)/info.o		\
 		$(O)/sounds.o		\
-		$(SYS_OBJS)
+		$(SYS_OBJS)		\
+		$(O)/mc1_stdc.o
 
 all:	 $(O)/doom
 
