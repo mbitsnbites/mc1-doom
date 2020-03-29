@@ -41,6 +41,16 @@ void I_ShutdownGraphics(void)
 {
 }
 
+void I_StartFrame (void)
+{
+    // Er? This is declared in i_system.h.
+}
+
+void I_StartTic (void)
+{
+    // Er? This is declared in i_system.h.
+}
+
 void I_SetPalette (byte* palette)
 {
     (void)palette;
@@ -62,13 +72,5 @@ void I_WaitVBL(int count)
 void I_ReadScreen(byte* scr)
 {
     (void)scr;
-}
-
-void I_BeginRead(void)
-{
-}
-
-void I_EndRead (void)
-{
 }
 
