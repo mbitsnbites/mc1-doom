@@ -26,7 +26,7 @@ static const char
 rcsid[] = "$Id: w_wad.c,v 1.5 1997/02/03 16:47:57 b1 Exp $";
 
 
-#ifdef NORMALUNIX
+#if defined(NORMALUNIX) || defined(MC1)
 #include <ctype.h>
 #include <sys/types.h>
 #include <string.h>
@@ -66,7 +66,7 @@ void**			lumpcache;
 
 #define strcmpi	strcasecmp
 
-void strupr (char* s)
+static void strtoupper (char* s)
 {
     while (*s) { *s = toupper(*s); s++; }
 }
@@ -367,7 +367,7 @@ int W_CheckNumForName (char* name)
     name8.s[8] = 0;
 
     // case insensitive
-    strupr (name8.s);		
+    strtoupper (name8.s);
 
     v1 = name8.x[0];
     v2 = name8.x[1];
