@@ -16,7 +16,7 @@ O=out-mc1
 # System specific implementation
 SYS_OBJS=				\
 		$(O)/i_system.o		\
-		$(O)/i_sound.o		\
+		$(O)/i_sound_mc1.o	\
 		$(O)/i_video.o		\
 		$(O)/i_net.o		\
 
