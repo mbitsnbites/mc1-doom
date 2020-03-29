@@ -17,8 +17,8 @@ O=out-mc1
 SYS_OBJS=				\
 		$(O)/i_system.o		\
 		$(O)/i_sound_mc1.o	\
-		$(O)/i_video.o		\
-		$(O)/i_net.o		\
+		$(O)/i_net_mc1.o	\
+		$(O)/i_video.o
 
 # not too sophisticated dependency
 OBJS=					\
