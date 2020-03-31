@@ -21,61 +21,37 @@
 // These are placeholders for proper implementations.
 //-----------------------------------------------------------------------------
 
-void access(void)
+#include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+// TODO(m): This should be implemented by newlib (?!).
+int mkdir (const char *pathname, mode_t mode)
 {
+  (void)pathname;
+  (void)mode;
+  errno = EACCES;
+  return -1;
 }
 
-void _close(void)
+// TODO(m): Emulate access(), perhaps using stat()? We probably only have to
+// deal with mode == R_OK.
+int access(const char *pathname, int mode)
 {
+  (void)pathname;
+  (void)mode;
+  errno = EACCES;
+  return 0;
 }
 
-void _exit(int code)
+char _mrisc32_inbyte (void)
 {
-    (void) code;
-    while (1) {}
+  return '?';
 }
 
-void _fstat(void)
+int _mrisc32_outbyte (char x)
 {
-}
-
-void _getpid(void)
-{
-}
-
-void _gettimeofday(void)
-{
-}
-
-void _isatty(void)
-{
-}
-
-void _kill(void)
-{
-}
-
-void _lseek(void)
-{
-}
-
-void mkdir(void)
-{
-}
-
-void _open(void)
-{
-}
-
-void _read(void)
-{
-}
-
-void _sbrk(void)
-{
-}
-
-void _write(void)
-{
+  return 0;
 }
 

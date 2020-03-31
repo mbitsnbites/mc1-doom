@@ -80,7 +80,7 @@ OBJS=					\
 		$(O)/info.o		\
 		$(O)/sounds.o		\
 		$(SYS_OBJS)		\
-		$(O)/mc1_stdc.o
+		$(O)/mc1_syscalls.o
 
 all:	 $(O)/doom
 
