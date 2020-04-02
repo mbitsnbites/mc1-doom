@@ -35,23 +35,17 @@ int mkdir (const char *pathname, mode_t mode)
   return -1;
 }
 
-// TODO(m): Emulate access(), perhaps using stat()? We probably only have to
-// deal with mode == R_OK.
-int access(const char *pathname, int mode)
+// Emulate access() using stat()?
+int access (const char *pathname, int mode)
 {
-  (void)pathname;
-  (void)mode;
-  errno = EACCES;
-  return 0;
-}
+  struct stat buf;
+  if (stat (pathname, &buf) != 0)
+  {
+    errno = EACCES;
+    return -1;
+  }
 
-char _mrisc32_inbyte (void)
-{
-  return '?';
-}
-
-int _mrisc32_outbyte (char x)
-{
+  // We just say: If the file exists, we're good to go.
   return 0;
 }
 

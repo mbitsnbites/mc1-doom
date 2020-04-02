@@ -6,8 +6,8 @@
 #
 CC=  mrisc32-elf-gcc
 
-CFLAGS=-O2 -Wall -DMC1
-LDFLAGS=
+CFLAGS=-O3 -Wall -DMC1
+LDFLAGS=-msim
 LIBS=-lm
 
 # subdirectory for objects
