@@ -45,6 +45,7 @@ rcsid[] = "$Id: r_data.c,v 1.4 1997/02/03 16:47:55 b1 Exp $";
 #include  <alloca.h>
 #endif
 
+#include <stddef.h>  // For size_t
 
 #include "r_data.h"
 
@@ -84,12 +85,14 @@ typedef struct
 typedef struct
 {
     char		name[8];
-    boolean		masked;	
+    short		flags;
+    byte		scalex;
+    byte		scaley;
     short		width;
     short		height;
-    void		**columndirectory;	// OBSOLETE
+    byte		columndirectory[4];	// OBSOLETE
     short		patchcount;
-    mappatch_t	patches[1];
+    mappatch_t		patches[1];
 } maptexture_t;
 
 
@@ -479,13 +482,13 @@ void R_InitTextures (void)
     }
     numtextures = numtextures1 + numtextures2;
 	
-    textures = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    texturecolumnlump = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    texturecolumnofs = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    texturecomposite = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    texturecompositesize = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    texturewidthmask = Z_Malloc (numtextures*4, PU_STATIC, 0);
-    textureheight = Z_Malloc (numtextures*4, PU_STATIC, 0);
+    textures = Z_Malloc (numtextures*sizeof(*textures), PU_STATIC, 0);
+    texturecolumnlump = Z_Malloc (numtextures*sizeof(*texturecolumnlump), PU_STATIC, 0);
+    texturecolumnofs = Z_Malloc (numtextures*sizeof(*texturecolumnofs), PU_STATIC, 0);
+    texturecomposite = Z_Malloc (numtextures*sizeof(*texturecomposite), PU_STATIC, 0);
+    texturecompositesize = Z_Malloc (numtextures*sizeof(*texturecompositesize), PU_STATIC, 0);
+    texturewidthmask = Z_Malloc (numtextures*sizeof(*texturewidthmask), PU_STATIC, 0);
+    textureheight = Z_Malloc (numtextures*sizeof(*textureheight), PU_STATIC, 0);
 
     totalwidth = 0;
     
@@ -519,6 +522,7 @@ void R_InitTextures (void)
 	if (offset > maxoff)
 	    I_Error ("R_InitTextures: bad texture directory");
 	
+	// TODO(m): Really dangerous casting shit!
 	mtexture = (maptexture_t *) ( (byte *)maptex + offset);
 
 	texture = textures[i] =
@@ -545,8 +549,8 @@ void R_InitTextures (void)
 			 texture->name);
 	    }
 	}		
-	texturecolumnlump[i] = Z_Malloc (texture->width*2, PU_STATIC,0);
-	texturecolumnofs[i] = Z_Malloc (texture->width*2, PU_STATIC,0);
+	texturecolumnlump[i] = Z_Malloc (texture->width*sizeof(short), PU_STATIC,0);
+	texturecolumnofs[i] = Z_Malloc (texture->width*sizeof(short), PU_STATIC,0);
 
 	j = 1;
 	while (j*2 <= texture->width)
@@ -567,7 +571,7 @@ void R_InitTextures (void)
 	R_GenerateLookup (i);
     
     // Create translation table for global animation.
-    texturetranslation = Z_Malloc ((numtextures+1)*4, PU_STATIC, 0);
+    texturetranslation = Z_Malloc ((numtextures+1)*sizeof(*texturetranslation), PU_STATIC, 0);
     
     for (i=0 ; i<numtextures ; i++)
 	texturetranslation[i] = i;
@@ -587,7 +591,7 @@ void R_InitFlats (void)
     numflats = lastflat - firstflat + 1;
 	
     // Create translation table for global animation.
-    flattranslation = Z_Malloc ((numflats+1)*4, PU_STATIC, 0);
+    flattranslation = Z_Malloc ((numflats+1)*sizeof(*flattranslation), PU_STATIC, 0);
     
     for (i=0 ; i<numflats ; i++)
 	flattranslation[i] = i;
@@ -609,9 +613,9 @@ void R_InitSpriteLumps (void)
     lastspritelump = W_GetNumForName ("S_END") - 1;
     
     numspritelumps = lastspritelump - firstspritelump + 1;
-    spritewidth = Z_Malloc (numspritelumps*4, PU_STATIC, 0);
-    spriteoffset = Z_Malloc (numspritelumps*4, PU_STATIC, 0);
-    spritetopoffset = Z_Malloc (numspritelumps*4, PU_STATIC, 0);
+    spritewidth = Z_Malloc (numspritelumps*sizeof(*spritewidth), PU_STATIC, 0);
+    spriteoffset = Z_Malloc (numspritelumps*sizeof(*spriteoffset), PU_STATIC, 0);
+    spritetopoffset = Z_Malloc (numspritelumps*sizeof(*spritetopoffset), PU_STATIC, 0);
 	
     for (i=0 ; i< numspritelumps ; i++)
     {
@@ -639,7 +643,7 @@ void R_InitColormaps (void)
     lump = W_GetNumForName("COLORMAP"); 
     length = W_LumpLength (lump) + 255; 
     colormaps = Z_Malloc (length, PU_STATIC, 0); 
-    colormaps = (byte *)( ((int)colormaps + 255)&~0xff); 
+    colormaps = (byte *)( ((size_t)colormaps + 255)&~(size_t)0xff);
     W_ReadLump (lump,colormaps); 
 }
 
