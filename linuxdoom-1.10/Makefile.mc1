@@ -4,7 +4,9 @@
 #
 # $Log:$
 #
-CC=  mrisc32-elf-gcc
+
+CC=mrisc32-elf-gcc
+OBJCOPY=mrisc32-elf-objcopy
 
 CFLAGS=-O3 -Wall -DMC1
 LDFLAGS=-msim
@@ -16,7 +18,7 @@ O=out-mc1
 # System specific implementation
 SYS_OBJS=				\
 		$(O)/i_system.o		\
-		$(O)/i_sound_mc1.o	\
+		$(O)/i_sound_dummy.o	\
 		$(O)/i_net_mc1.o	\
 		$(O)/i_video_mc1.o
 
@@ -82,11 +84,14 @@ OBJS=					\
 		$(SYS_OBJS)		\
 		$(O)/mc1_syscalls.o
 
-all:	 $(O)/doom
+all:	 $(O)/doom.bin
 
 clean:
 	rm -f *.o *~ *.flc
 	rm -f $(O)/*
+
+$(O)/doom.bin:	$(O)/doom
+	$(OBJCOPY) -O binary out-mc1/doom out-mc1/doom.bin
 
 $(O)/doom:	$(OBJS) $(O)/i_main.o
 	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) $(O)/i_main.o \
