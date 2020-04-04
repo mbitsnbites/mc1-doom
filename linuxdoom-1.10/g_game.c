@@ -1582,11 +1582,14 @@ void G_DeferedPlayDemo (char* name)
 void G_DoPlayDemo (void) 
 { 
     skill_t skill; 
-    int             i, episode, map; 
+    int             i, episode, map, version;
 	 
     gameaction = ga_nothing; 
     demobuffer = demo_p = W_CacheLumpName (defdemoname, PU_STATIC); 
-    if ( *demo_p++ != VERSION)
+    version = *demo_p++;
+
+    // We allow VERSION 1.10 to load 1.9 demos (they seem compatible).
+    if (version != VERSION && !(version == 109 && VERSION == 110))
     {
       fprintf( stderr, "Demo is from a different game version!\n");
       gameaction = ga_nothing;
