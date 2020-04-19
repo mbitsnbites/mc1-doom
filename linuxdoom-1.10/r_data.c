@@ -37,9 +37,7 @@
 #include "doomstat.h"
 #include "r_sky.h"
 
-#ifdef LINUX
 #include  <alloca.h>
-#endif
 
 #include <stddef.h>  // For size_t
 
@@ -190,9 +188,6 @@ R_DrawColumnInCache
     int		count;
     int		position;
     byte*	source;
-    byte*	dest;
-	
-    dest = (byte *)cache + 3;
 	
     while (patch->topdelta != 0xff)
     {

@@ -454,17 +454,16 @@ void CheckAbort (void)
     stoptic = I_GetTime () + 2; 
     while (I_GetTime() < stoptic) 
 	I_StartTic (); 
-	
+
     I_StartTic ();
-    for ( ; eventtail != eventhead 
-	      ; eventtail = (++eventtail)&(MAXEVENTS-1) ) 
-    { 
-	ev = &events[eventtail]; 
+    for (; eventtail != eventhead;)
+    {
+	ev = &events[eventtail++];
+	eventtail &= (MAXEVENTS - 1);
 	if (ev->type == ev_keydown && ev->data1 == KEY_ESCAPE)
 	    I_Error ("Network game synchronization aborted.");
-    } 
+    }
 }
-
 
 //
 // D_ArbitrateNetStart

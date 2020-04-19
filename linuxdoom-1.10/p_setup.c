@@ -623,10 +623,12 @@ P_SetupLevel
     // find map name
     if ( gamemode == commercial)
     {
-	if (map<10)
+	if (map >= 0 && map<10)
 	    sprintf (lumpname,"map0%i", map);
-	else
+	else if (map >= 0 && map<100000)
 	    sprintf (lumpname,"map%i", map);
+	else
+	    I_Error ("P_SetupLevel: invalid map number: %d", map);
     }
     else
     {

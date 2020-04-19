@@ -983,10 +983,6 @@ void WI_drawDeathmatchStats(void)
     int		x;
     int		y;
     int		w;
-    
-    int		lh;	// line height
-
-    lh = WI_SPACINGY;
 
     WI_slamBackground();
     
@@ -1573,8 +1569,13 @@ void WI_loadData(void)
 				       PU_STATIC, 0);
 	for (i=0 ; i<NUMCMAPS ; i++)
 	{								
-	    sprintf(name, "CWILV%2.2d", i);
-	    lnames[i] = W_CacheLumpName(name, PU_STATIC);
+	    if (i >= 0 && i <= 99)
+	    {
+		sprintf(name, "CWILV%2.2d", i);
+		lnames[i] = W_CacheLumpName(name, PU_STATIC);
+	    }
+	    else
+		I_Error ("WI_loadData: i out of range");
 	}					
     }
     else
@@ -1607,8 +1608,15 @@ void WI_loadData(void)
 		    if (wbs->epsd != 1 || j != 8) 
 		    {
 			// animations
-			sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);  
-			a->p[i] = W_CacheLumpName(name, PU_STATIC);
+			if (j >= 0 && j <= 99 && i >= 0 && i <= 99)
+			{
+			    sprintf(name, "WIA%d%.2d%.2d", wbs->epsd, j, i);
+			    a->p[i] = W_CacheLumpName(name, PU_STATIC);
+			}
+			else
+			{
+			    I_Error ("WI_loadData: i,j out of range");
+			}
 		    }
 		    else
 		    {

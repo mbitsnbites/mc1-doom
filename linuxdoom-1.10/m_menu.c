@@ -527,6 +527,7 @@ void M_ReadSaveStrings(void)
 	    continue;
 	}
 	count = read (handle, &savegamestrings[i], SAVESTRINGSIZE);
+	(void)count;  // Check this?
 	close (handle);
 	LoadMenu[i].status = 1;
     }

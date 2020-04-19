@@ -27,18 +27,16 @@
 #define	BGCOLOR		7
 #define	FGCOLOR		8
 
-
-#ifdef NORMALUNIX
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <sys/unistd.h>
+
+#ifdef NORMALUNIX
 #include <unistd.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#else
-#include <sys/unistd.h>
 #endif
-
 
 #include "doomdef.h"
 #include "doomstat.h"
@@ -148,8 +146,8 @@ int 		eventtail;
 //
 void D_PostEvent (event_t* ev)
 {
-    events[eventhead] = *ev;
-    eventhead = (++eventhead)&(MAXEVENTS-1);
+    events[eventhead++] = *ev;
+    eventhead &= (MAXEVENTS-1);
 }
 
 
@@ -166,9 +164,10 @@ void D_ProcessEvents (void)
 	 && (W_CheckNumForName("map01")<0) )
       return;
 	
-    for ( ; eventtail != eventhead ; eventtail = (++eventtail)&(MAXEVENTS-1) )
+    for ( ; eventtail != eventhead ; )
     {
-	ev = &events[eventtail];
+	ev = &events[eventtail++];
+	eventtail &= (MAXEVENTS - 1);
 	if (M_Responder (ev))
 	    continue;               // menu ate the event
 	G_Responder (ev);
@@ -587,7 +586,7 @@ void IdentifyVersion (void)
     sprintf(doom2wad, "%s/doom2.wad", doomwaddir);
 
     // Retail.
-    doomuwad = malloc(strlen(doomwaddir)+1+8+1);
+    doomuwad = malloc(strlen(doomwaddir)+1+9+1);
     sprintf(doomuwad, "%s/doomu.wad", doomwaddir);
     
     // Registered.

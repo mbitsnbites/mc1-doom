@@ -86,7 +86,11 @@ byte* I_AllocLow (int length);
 void I_Tactile (int on, int off, int total);
 
 
-void I_Error (char *error, ...);
+#ifdef __GNUC__
+#define NORETURN __attribute__ ((noreturn))
+#endif
+
+void I_Error (char *error, ...) NORETURN;
 
 
 #endif
