@@ -10,5 +10,10 @@ MC1-DOOM is based on the original linuxdoom code base from 1997, with some
 bugfixes and alterations to make it work on MRISC32, and of course graphics
 and I/O routines for the MC1 computer.
 
+## Origins & License
+
 Original [README.TXT](iddoc/README.TXT).
+
+The source code is released under the GNU General Public License, as
+outlined in [DOOMLIC.TXT](iddoc/DOOMLIC.TXT).
 
