@@ -455,7 +455,7 @@ void I_InitGraphics(void)
 							SDL_GetError());
     }
     SDL_ShowCursor(0);
-    SDL_WM_SetCaption("SDL DOOM! v1.10", "doom");
+    SDL_WM_SetCaption("MC1-DOOM (SDL) v1.10", "doom");
 
     /* Set up the screen displays */
     w = SCREENWIDTH * multiply;
