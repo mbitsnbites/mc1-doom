@@ -6,8 +6,9 @@ This is the classic game DOOM (by id Software) ported to the
 [MRISC32](https://mrisc32.bitsnbites.eu/)-based computer
 [MC1](https://github.com/mrisc32/mc1).
 
-It is based on the original linuxdoom code base from 1997, with
-some bugfixes and alterations to make it work on MRISC32, and
-of course graphics and I/O routines for the MC1 computer.
+MC1-DOOM is based on the original linuxdoom code base from 1997, with some
+bugfixes and alterations to make it work on MRISC32, and of course graphics
+and I/O routines for the MC1 computer.
 
-Original [README.TXT](README.TXT).
+Original [README.TXT](iddoc/README.TXT).
+
