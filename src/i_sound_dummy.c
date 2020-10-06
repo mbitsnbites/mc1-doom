@@ -19,7 +19,7 @@
 // $Log:$
 //
 // DESCRIPTION:
-//	System interface for sound.
+//	Dummy system interface for sound.
 //
 //-----------------------------------------------------------------------------
 

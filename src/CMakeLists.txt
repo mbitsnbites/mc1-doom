@@ -18,11 +18,8 @@ set(SRCS
 		hu_lib.c
 		hu_stuff.c
 		i_main.c
-		i_net.c
 		info.c
-		i_sound_dummy.c
 		i_system.c
-		i_video_sdl.c
 		m_argv.c
 		m_bbox.c
 		m_cheat.c
@@ -68,9 +65,25 @@ set(SRCS
 		v_video.c
 		z_zone.c)
 
+set(LIBS "")
+
+# Video.
+find_package(SDL)
+if(SDL_FOUND)
+  list(APPEND SRCS i_video_sdl.c)
+  list(APPEND LIBS ${SDL_LIBRARY})
+else()
+  list(APPEND SRCS i_video_dummy.c)
+endif()
+
+# Sound.
+# TODO(m): Add something that works, e.g. ALSA.
+list(APPEND SRCS i_sound_dummy.c)
+
+# Network.
+list(APPEND SRCS i_net.c)
+
 add_executable(mc1doom ${SRCS})
 target_compile_definitions(mc1doom PRIVATE -DNORMALUNIX -DLINUX)
-
-find_package(SDL REQUIRED)
-target_link_libraries(mc1doom PRIVATE ${SDL_LIBRARY})
+target_link_libraries(mc1doom PRIVATE ${LIBS})
 

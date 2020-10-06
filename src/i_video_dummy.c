@@ -19,17 +19,12 @@
 // $Log:$
 //
 // DESCRIPTION:
-//	DOOM graphics stuff for MC1.
+//	Dummy system interface for video.
 //
 //-----------------------------------------------------------------------------
 
 #include "i_video.h"
 
-
-//-----------------------------------------------------------------------------
-// TODO(m): This is currently just a dummy placeholder. Implement proper video
-// support!
-//-----------------------------------------------------------------------------
 
 void I_InitGraphics(void)
 {

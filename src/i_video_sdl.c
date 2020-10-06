@@ -132,6 +132,20 @@ void I_StartFrame (void)
 
 }
 
+void I_WaitVBL(int count)
+{
+    // Should we use some other method here?
+#ifdef SGI
+    sginap(1);
+#else
+#ifdef SUN
+    sleep(0);
+#else
+    usleep (count * (1000000/70) );
+#endif
+#endif
+}
+
 /* This processes SDL events */
 void I_GetEvent(SDL_Event *Event)
 {
