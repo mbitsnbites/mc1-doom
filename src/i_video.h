@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -16,14 +14,12 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	System specific interface stuff.
+//      System specific interface stuff.
 //
 //-----------------------------------------------------------------------------
 
-
 #ifndef __I_VIDEO__
 #define __I_VIDEO__
-
 
 #include "doomtype.h"
 
@@ -31,12 +27,10 @@
 #pragma interface
 #endif
 
-
 // Called by D_DoomMain,
 // determines the hardware configuration
 // and sets up the video mode
 void I_InitGraphics (void);
-
 
 void I_ShutdownGraphics(void);
 
@@ -54,11 +48,4 @@ void I_ReadScreen (byte* scr);
 void I_BeginRead (void);
 void I_EndRead (void);
 
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __I_VIDEO__

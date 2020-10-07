@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,14 +13,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
 //  Sky rendering. The DOOM sky is a texture map like any
 //  wall, wrapping around. A 1024 columns equal 360 degrees.
 //  The default sky map is 256 columns and repeats 4 times
 //  on a 320 screen?
-//  
 //
 //-----------------------------------------------------------------------------
 
@@ -32,7 +27,6 @@
 // Needed for Flat retrieval.
 #include "r_data.h"
 
-
 #ifdef __GNUG__
 #pragma implementation "r_sky.h"
 #endif
@@ -41,11 +35,9 @@
 //
 // sky mapping
 //
-int			skyflatnum;
-int			skytexture;
-int			skytexturemid;
-
-
+int                     skyflatnum;
+int                     skytexture;
+int                     skytexturemid;
 
 //
 // R_InitSkyMap

@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,9 +13,8 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-//
 // DESCRIPTION:
-//	System interface, sound.
+//      System interface, sound.
 //
 //-----------------------------------------------------------------------------
 
@@ -36,8 +33,6 @@ extern char* sndserver_filename;
 #include "doomstat.h"
 #include "sounds.h"
 
-
-
 // Init at program start...
 void I_InitSound();
 
@@ -47,7 +42,6 @@ void I_SubmitSound(void);
 
 // ... shut down and relase at program termination.
 void I_ShutdownSound(void);
-
 
 //
 //  SFX I/O
@@ -59,16 +53,14 @@ void I_SetChannels();
 // Get raw data lump index for sound descriptor.
 int I_GetSfxLumpNum (sfxinfo_t* sfxinfo );
 
-
 // Starts a sound in a particular sound channel.
 int
 I_StartSound
-( int		id,
-  int		vol,
-  int		sep,
-  int		pitch,
-  int		priority );
-
+( int           id,
+  int           vol,
+  int           sep,
+  int           pitch,
+  int           priority );
 
 // Stops a sound channel.
 void I_StopSound(int handle);
@@ -82,11 +74,10 @@ int I_SoundIsPlaying(int handle);
 //  and pitch of a sound channel.
 void
 I_UpdateSoundParams
-( int		handle,
-  int		vol,
-  int		sep,
-  int		pitch );
-
+( int           handle,
+  int           vol,
+  int           sep,
+  int           pitch );
 
 //
 //  MUSIC I/O
@@ -106,18 +97,11 @@ int I_RegisterSong(void *data);
 // Horrible thing to do, considering.
 void
 I_PlaySong
-( int		handle,
-  int		looping );
+( int           handle,
+  int           looping );
 // Stops a song over 3 seconds.
 void I_StopSong(int handle);
 // See above (register), then think backwards
 void I_UnRegisterSong(int handle);
 
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __I_SOUND__

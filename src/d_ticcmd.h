@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -16,10 +14,9 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	System specific interface stuff.
+//      System specific interface stuff.
 //
 //-----------------------------------------------------------------------------
-
 
 #ifndef __D_TICCMD__
 #define __D_TICCMD__
@@ -36,19 +33,12 @@
 // plus a checksum for internal state consistency.
 typedef struct
 {
-    char	forwardmove;	// *2048 for move
-    char	sidemove;	// *2048 for move
-    short	angleturn;	// <<16 for angle delta
-    short	consistancy;	// checks for net game
-    byte	chatchar;
-    byte	buttons;
+    char        forwardmove;    // *2048 for move
+    char        sidemove;       // *2048 for move
+    short       angleturn;      // <<16 for angle delta
+    short       consistancy;    // checks for net game
+    byte        chatchar;
+    byte        buttons;
 } ticcmd_t;
 
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __D_TICCMD__

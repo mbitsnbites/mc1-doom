@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 // Copyright (C) 2020 by Marcus Geelnard
@@ -16,15 +14,12 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
-//	Dummy system interface for video.
+//      Dummy system interface for video.
 //
 //-----------------------------------------------------------------------------
 
 #include "i_video.h"
-
 
 void I_InitGraphics(void)
 {

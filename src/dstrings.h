@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,18 +13,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-//
-// $Log:$
-//
 // DESCRIPTION:
-//	DOOM strings, by language.
+//      DOOM strings, by language.
 //
 //-----------------------------------------------------------------------------
 
-
 #ifndef __DSTRINGS__
 #define __DSTRINGS__
-
 
 // All important printed strings.
 // Language selection (message strings).
@@ -39,8 +32,7 @@
 #endif
 
 // Misc. other strings.
-#define SAVEGAMENAME	"doomsav"
-
+#define SAVEGAMENAME    "doomsav"
 
 //
 // File locations,
@@ -50,7 +42,6 @@
 #define DEVMAPS "devmaps"
 #define DEVDATA "devdata"
 
-
 // Not done in french?
 
 // QuitDOOM messages
@@ -58,10 +49,4 @@
 
 extern char* endmsg[];
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __DSTRINGS__

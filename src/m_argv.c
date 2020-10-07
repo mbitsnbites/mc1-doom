@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,19 +13,14 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
 //
 //-----------------------------------------------------------------------------
 
 #include <string.h>
 
-int		myargc;
-char**		myargv;
-
-
-
+int             myargc;
+char**          myargv;
 
 //
 // M_CheckParm
@@ -37,17 +30,14 @@ char**		myargv;
 // or 0 if not present
 int M_CheckParm (char *check)
 {
-    int		i;
+    int         i;
 
     for (i = 1;i<myargc;i++)
     {
-	if ( !strcasecmp(check, myargv[i]) )
-	    return i;
+        if ( !strcasecmp(check, myargv[i]) )
+            return i;
     }
 
     return 0;
 }
-
-
-
 

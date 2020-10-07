@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -14,8 +12,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
-// $Log:$
 //
 // DESCRIPTION:
 //  DoomDef - basic defines for DOOM, e.g. Version, game mode
@@ -31,5 +27,4 @@
 // Location for any defines turned variables.
 
 // None.
-
 

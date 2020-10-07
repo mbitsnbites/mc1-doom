@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -22,16 +20,12 @@
 //
 //-----------------------------------------------------------------------------
 
-
 #ifndef __D_THINK__
 #define __D_THINK__
-
 
 #ifdef __GNUG__
 #pragma interface
 #endif
-
-
 
 //
 // Experimental stuff.
@@ -45,36 +39,24 @@ typedef  void (*actionf_p2)( void*, void* );
 
 typedef union
 {
-  actionf_p1	acp1;
-  actionf_v	acv;
-  actionf_p2	acp2;
+  actionf_p1    acp1;
+  actionf_v     acv;
+  actionf_p2    acp2;
 
 } actionf_t;
-
-
-
-
 
 // Historically, "think_t" is yet another
 //  function pointer to a routine to handle
 //  an actor.
 typedef actionf_t  think_t;
 
-
 // Doubly linked list of actors.
 typedef struct thinker_s
 {
-    struct thinker_s*	prev;
-    struct thinker_s*	next;
-    think_t		function;
-    
+    struct thinker_s*   prev;
+    struct thinker_s*   next;
+    think_t             function;
+
 } thinker_t;
 
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __D_THINK__

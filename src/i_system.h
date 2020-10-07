@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -16,10 +14,9 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	System specific interface stuff.
+//      System specific interface stuff.
 //
 //-----------------------------------------------------------------------------
-
 
 #ifndef __I_SYSTEM__
 #define __I_SYSTEM__
@@ -31,20 +28,17 @@
 #pragma interface
 #endif
 
-
 // Called by DoomMain.
 void I_Init (void);
 
 // Called by startup code
 // to get the ammount of memory to malloc
 // for the zone management.
-byte*	I_ZoneBase (int *size);
-
+byte*   I_ZoneBase (int *size);
 
 // Called by D_DoomLoop,
 // returns current time in tics.
 int I_GetTime (void);
-
 
 //
 // Called by D_DoomLoop,
@@ -55,7 +49,6 @@ int I_GetTime (void);
 // Can call D_PostEvent.
 //
 void I_StartFrame (void);
-
 
 //
 // Called by D_DoomLoop,
@@ -74,11 +67,9 @@ void I_StartTic (void);
 // for normal input.
 ticcmd_t* I_BaseTiccmd (void);
 
-
 // Called by M_Responder when quit is selected.
 // Clean exit, displays sell blurb.
 void I_Quit (void);
-
 
 // Allocates from low memory under dos,
 // just mallocs under unix
@@ -86,17 +77,10 @@ byte* I_AllocLow (int length);
 
 void I_Tactile (int on, int off, int total);
 
-
 #ifdef __GNUC__
 #define NORETURN __attribute__ ((noreturn))
 #endif
 
 void I_Error (char *error, ...) NORETURN;
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __I_SYSTEM__

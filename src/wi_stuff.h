@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -45,11 +43,6 @@ void WI_Ticker (void);
 void WI_Drawer (void);
 
 // Setup for an intermission screen.
-void WI_Start(wbstartstruct_t*	 wbstartstruct);
+void WI_Start(wbstartstruct_t*   wbstartstruct);
 
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __WI_STUFF__

@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -17,26 +15,15 @@
 //
 // DESCRIPTION:
 //
-//
 //-----------------------------------------------------------------------------
-
 
 #ifndef __P_INTER__
 #define __P_INTER__
-
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
+boolean P_GivePower(player_t*, int);
 
-boolean	P_GivePower(player_t*, int);
-
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __P_INTER__

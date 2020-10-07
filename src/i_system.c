@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -14,8 +12,6 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-//
-// $Log:$
 //
 // DESCRIPTION:
 //
@@ -42,17 +38,13 @@
 #endif
 #include "i_system.h"
 
-
-
-
-int	mb_used = 6;
-
+int     mb_used = 6;
 
 void
 I_Tactile
-( int	on,
-  int	off,
-  int	total )
+( int   on,
+  int   off,
+  int   total )
 {
   // UNUSED.
   (void)on;
@@ -60,25 +52,22 @@ I_Tactile
   (void)total;
 }
 
-ticcmd_t	emptycmd;
-ticcmd_t*	I_BaseTiccmd(void)
+ticcmd_t        emptycmd;
+ticcmd_t*       I_BaseTiccmd(void)
 {
     return &emptycmd;
 }
-
 
 int  I_GetHeapSize (void)
 {
     return mb_used*1024*1024;
 }
 
-byte* I_ZoneBase (int*	size)
+byte* I_ZoneBase (int*  size)
 {
     *size = mb_used*1024*1024;
     return (byte *) malloc (*size);
 }
-
-
 
 //
 // I_GetTime
@@ -86,19 +75,17 @@ byte* I_ZoneBase (int*	size)
 //
 int  I_GetTime (void)
 {
-    struct timeval	tp;
-    struct timezone	tzp;
-    int			newtics;
-    static int		basetime=0;
-  
+    struct timeval      tp;
+    struct timezone     tzp;
+    int                 newtics;
+    static int          basetime=0;
+
     gettimeofday(&tp, &tzp);
     if (!basetime)
-	basetime = tp.tv_sec;
+        basetime = tp.tv_sec;
     newtics = (tp.tv_sec-basetime)*TICRATE + tp.tv_usec*TICRATE/1000000;
     return newtics;
 }
-
-
 
 //
 // I_Init
@@ -130,15 +117,14 @@ void I_EndRead(void)
 {
 }
 
-byte*	I_AllocLow(int length)
+byte*   I_AllocLow(int length)
 {
-    byte*	mem;
-        
+    byte*       mem;
+
     mem = (byte *)malloc (length);
     memset (mem,0,length);
     return mem;
 }
-
 
 //
 // I_Error
@@ -147,7 +133,7 @@ extern boolean demorecording;
 
 void I_Error (char *error, ...)
 {
-    va_list	argptr;
+    va_list     argptr;
 
     // Message first.
     va_start (argptr,error);
@@ -160,10 +146,10 @@ void I_Error (char *error, ...)
 
     // Shutdown. Here might be other errors.
     if (demorecording)
-	G_CheckDemoStatus();
+        G_CheckDemoStatus();
 
     D_QuitNetGame ();
     I_ShutdownGraphics();
-    
+
     exit(-1);
 }

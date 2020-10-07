@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -17,9 +15,8 @@
 //
 // DESCRIPTION:
 //  Nil.
-//    
+//
 //-----------------------------------------------------------------------------
-
 
 #ifndef __M_ARGV__
 #define __M_ARGV__
@@ -27,17 +24,11 @@
 //
 // MISC
 //
-extern  int	myargc;
-extern  char**	myargv;
+extern  int     myargc;
+extern  char**  myargv;
 
 // Returns the position of the given parameter
 // in the arg list (0 if not found).
 int M_CheckParm (char* check);
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __M_ARGV__

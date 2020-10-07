@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,11 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
-//	Archiving: SaveGame I/O.
-//	Thinker, Ticker.
+//      Archiving: SaveGame I/O.
+//      Thinker, Ticker.
 //
 //-----------------------------------------------------------------------------
 
@@ -28,8 +24,7 @@
 
 #include "doomstat.h"
 
-
-int	leveltime;
+int     leveltime;
 
 //
 // THINKERS
@@ -39,11 +34,8 @@ int	leveltime;
 // but the first element must be thinker_t.
 //
 
-
-
 // Both the head and tail of the thinker list.
-thinker_t	thinkercap;
-
+thinker_t       thinkercap;
 
 //
 // P_InitThinkers
@@ -52,9 +44,6 @@ void P_InitThinkers (void)
 {
     thinkercap.prev = thinkercap.next  = &thinkercap;
 }
-
-
-
 
 //
 // P_AddThinker
@@ -68,8 +57,6 @@ void P_AddThinker (thinker_t* thinker)
     thinkercap.prev = thinker;
 }
 
-
-
 //
 // P_RemoveThinker
 // Deallocation is lazy -- it will not actually be freed
@@ -81,8 +68,6 @@ void P_RemoveThinker (thinker_t* thinker)
   thinker->function.acv = (actionf_v)(-1);
 }
 
-
-
 //
 // P_AllocateThinker
 // Allocates memory and adds a new thinker at the end of the list.
@@ -93,35 +78,31 @@ void P_AllocateThinker (thinker_t* thinker)
     (void)thinker;
 }
 
-
-
 //
 // P_RunThinkers
 //
 void P_RunThinkers (void)
 {
-    thinker_t*	currentthinker;
+    thinker_t*  currentthinker;
 
     currentthinker = thinkercap.next;
     while (currentthinker != &thinkercap)
     {
-	if ( currentthinker->function.acv == (actionf_v)(-1) )
-	{
-	    // time to remove it
-	    currentthinker->next->prev = currentthinker->prev;
-	    currentthinker->prev->next = currentthinker->next;
-	    Z_Free (currentthinker);
-	}
-	else
-	{
-	    if (currentthinker->function.acp1)
-		currentthinker->function.acp1 (currentthinker);
-	}
-	currentthinker = currentthinker->next;
+        if ( currentthinker->function.acv == (actionf_v)(-1) )
+        {
+            // time to remove it
+            currentthinker->next->prev = currentthinker->prev;
+            currentthinker->prev->next = currentthinker->next;
+            Z_Free (currentthinker);
+        }
+        else
+        {
+            if (currentthinker->function.acp1)
+                currentthinker->function.acp1 (currentthinker);
+        }
+        currentthinker = currentthinker->next;
     }
 }
-
-
 
 //
 // P_Ticker
@@ -129,30 +110,29 @@ void P_RunThinkers (void)
 
 void P_Ticker (void)
 {
-    int		i;
-    
+    int         i;
+
     // run the tic
     if (paused)
-	return;
-		
+        return;
+
     // pause if in menu and at least one tic has been run
     if ( !netgame
-	 && menuactive
-	 && !demoplayback
-	 && players[consoleplayer].viewz != 1)
+         && menuactive
+         && !demoplayback
+         && players[consoleplayer].viewz != 1)
     {
-	return;
+        return;
     }
-    
-		
+
     for (i=0 ; i<MAXPLAYERS ; i++)
-	if (playeringame[i])
-	    P_PlayerThink (&players[i]);
-			
+        if (playeringame[i])
+            P_PlayerThink (&players[i]);
+
     P_RunThinkers ();
     P_UpdateSpecials ();
     P_RespawnSpecials ();
 
     // for par times
-    leveltime++;	
+    leveltime++;
 }

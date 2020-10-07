@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -16,31 +14,20 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	System specific network interface stuff.
+//      System specific network interface stuff.
 //
 //-----------------------------------------------------------------------------
 
-
 #ifndef __I_NET__
 #define __I_NET__
-
 
 #ifdef __GNUG__
 #pragma interface
 #endif
 
-
-
 // Called by D_DoomMain.
-
 
 void I_InitNetwork (void);
 void I_NetCmd (void);
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __I_NET__

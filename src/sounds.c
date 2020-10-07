@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,11 +13,9 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
-//	Created by a sound utility.
-//	Kept as a sample, DOOM2 sounds.
+//      Created by a sound utility.
+//      Kept as a sample, DOOM2 sounds.
 //
 //-----------------------------------------------------------------------------
 
@@ -103,7 +99,6 @@ musicinfo_t S_music[] =
     { "dm2ttl", 0, NULL, 0 },
     { "dm2int", 0, NULL, 0 }
 };
-
 
 //
 // Information about all the sfx

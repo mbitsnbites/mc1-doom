@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -17,17 +15,14 @@
 //
 // DESCRIPTION:
 //   Duh.
-// 
+//
 //-----------------------------------------------------------------------------
-
 
 #ifndef __G_GAME__
 #define __G_GAME__
 
 #include "doomdef.h"
 #include "d_event.h"
-
-
 
 //
 // GAME
@@ -67,14 +62,8 @@ void G_SecretExitLevel (void);
 void G_WorldDone (void);
 
 void G_Ticker (void);
-boolean G_Responder (event_t*	ev);
+boolean G_Responder (event_t*   ev);
 
 void G_ScreenShot (void);
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __G_GAME__

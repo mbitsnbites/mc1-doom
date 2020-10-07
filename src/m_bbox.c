@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -15,13 +13,11 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// $Log:$
-//
 // DESCRIPTION:
-//	Main loop menu stuff.
-//	Random number LUT.
-//	Default Config File.
-//	PCX Screenshots.
+//      Main loop menu stuff.
+//      Random number LUT.
+//      Default Config File.
+//      PCX Screenshots.
 //
 //-----------------------------------------------------------------------------
 
@@ -32,8 +28,6 @@
 
 #include <limits.h>
 
-
-
 void M_ClearBox (fixed_t *box)
 {
     box[BOXTOP] = box[BOXRIGHT] = INT_MIN;
@@ -42,21 +36,17 @@ void M_ClearBox (fixed_t *box)
 
 void
 M_AddToBox
-( fixed_t*	box,
-  fixed_t	x,
-  fixed_t	y )
+( fixed_t*      box,
+  fixed_t       x,
+  fixed_t       y )
 {
     if (x<box[BOXLEFT])
-	box[BOXLEFT] = x;
+        box[BOXLEFT] = x;
     else if (x>box[BOXRIGHT])
-	box[BOXRIGHT] = x;
+        box[BOXRIGHT] = x;
     if (y<box[BOXBOTTOM])
-	box[BOXBOTTOM] = y;
+        box[BOXBOTTOM] = y;
     else if (y>box[BOXTOP])
-	box[BOXTOP] = y;
+        box[BOXTOP] = y;
 }
-
-
-
-
 

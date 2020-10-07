@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -28,7 +26,6 @@
 #define AM_MSGENTERED (AM_MSGHEADER | ('e'<<8))
 #define AM_MSGEXITED (AM_MSGHEADER | ('x'<<8))
 
-
 // Called by main loop.
 boolean AM_Responder (event_t* ev);
 
@@ -43,11 +40,4 @@ void AM_Drawer (void);
 // if the level is completed while it is up.
 void AM_Stop (void);
 
-
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __AMMAP_H__

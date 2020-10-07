@@ -1,7 +1,5 @@
-// Emacs style mode select   -*- C++ -*- 
+// Emacs style mode select   -*- C++ -*-
 //-----------------------------------------------------------------------------
-//
-// $Id:$
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
 //
@@ -16,10 +14,9 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
-//	Cheat code checking.
+//      Cheat code checking.
 //
 //-----------------------------------------------------------------------------
-
 
 #ifndef __M_CHEAT__
 #define __M_CHEAT__
@@ -34,26 +31,19 @@
 
 typedef struct
 {
-    unsigned char*	sequence;
-    unsigned char*	p;
-    
+    unsigned char*      sequence;
+    unsigned char*      p;
+
 } cheatseq_t;
 
 int
 cht_CheckCheat
-( cheatseq_t*		cht,
-  char			key );
-
+( cheatseq_t*           cht,
+  char                  key );
 
 void
 cht_GetParam
-( cheatseq_t*		cht,
-  char*			buffer );
+( cheatseq_t*           cht,
+  char*                 buffer );
 
-
-#endif
-//-----------------------------------------------------------------------------
-//
-// $Log:$
-//
-//-----------------------------------------------------------------------------
+#endif  // __M_CHEAT__
