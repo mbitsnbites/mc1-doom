@@ -36,6 +36,9 @@
 
 #include "doomdef.h"
 
+#if defined(unix) || defined(__unix__) || defined(__unix)
+#include <unistd.h>
+#endif
 
 SDL_Surface *screen;
 
@@ -415,7 +418,6 @@ void I_InitGraphics(void)
 
     static int	firsttime=1;
     Uint16 video_w, video_h, w, h;
-    Uint8 video_bpp;
     Uint32 video_flags;
 
     if (!firsttime)
@@ -437,7 +439,6 @@ void I_InitGraphics(void)
 
     video_w = w = SCREENWIDTH * multiply;
     video_h = h = SCREENHEIGHT * multiply;
-    video_bpp = 8;
 
     /* We need to allocate a software surface because the DOOM! code expects
        the screen surface to be valid all of the time.  Properly done, the

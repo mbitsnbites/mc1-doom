@@ -161,7 +161,7 @@ void PacketGet (void)
     int			i;
     int			c;
     struct sockaddr_in	fromaddress;
-    int			fromlen;
+    socklen_t		fromlen;
     doomdata_t		sw;
 				
     fromlen = sizeof(fromaddress);

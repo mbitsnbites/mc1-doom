@@ -96,7 +96,7 @@ extern anim_t*	lastanim;
 //  and end entry, in the order found in
 //  the WAD file.
 //
-animdef_t		animdefs[] =
+static const animdef_t animdefs[] =
 {
     {false,	"NUKAGE3",	"NUKAGE1",	8},
     {false,	"FWATER4",	"FWATER1",	8},
@@ -126,7 +126,7 @@ animdef_t		animdefs[] =
     {true,	"WFALL4",	"WFALL1",	8},
     {true,	"DBRAIN4",	"DBRAIN1",	8},
 	
-    {-1}
+    {false,	"",		"",		-1}
 };
 
 anim_t		anims[MAXANIMS];
@@ -147,10 +147,9 @@ void P_InitPicAnims (void)
 {
     int		i;
 
-    
     //	Init animation
     lastanim = anims;
-    for (i=0 ; animdefs[i].istexture != -1 ; i++)
+    for (i=0 ; animdefs[i].speed > 0 ; i++)
     {
 	if (animdefs[i].istexture)
 	{

@@ -342,7 +342,9 @@ void A_ReFire
 ( player_t*	player,
   pspdef_t*	psp )
 {
-    
+    // UNUSED:
+    (void)psp;
+
     // check for fire
     //  (if a weaponchange is pending, let it go through instead)
     if ( (player->cmd.buttons & BT_ATTACK) 
@@ -365,6 +367,9 @@ A_CheckReload
 ( player_t*	player,
   pspdef_t*	psp )
 {
+    // UNUSED:
+    (void)psp;
+
     P_CheckAmmo (player);
 #if 0
     if (player->ammo[am_shell]<2)
@@ -448,6 +453,9 @@ A_GunFlash
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
+    // UNUSED:
+    (void)psp;
+
     P_SetMobjState (player->mo, S_PLAY_ATK2);
     P_SetPsprite (player,ps_flash,weaponinfo[player->readyweapon].flashstate);
 }
@@ -470,6 +478,9 @@ A_Punch
     angle_t	angle;
     int		damage;
     int		slope;
+
+    // UNUSED:
+    (void)psp;
 	
     damage = (P_Random ()%10+1)<<1;
 
@@ -505,6 +516,9 @@ A_Saw
     int		damage;
     int		slope;
 
+    // UNUSED:
+    (void)psp;
+
     damage = 2*(P_Random ()%10+1);
     angle = player->mo->angle;
     angle += (P_Random()-P_Random())<<18;
@@ -525,7 +539,7 @@ A_Saw
 			     linetarget->x, linetarget->y);
     if (angle - player->mo->angle > ANG180)
     {
-	if (angle - player->mo->angle < -ANG90/20)
+	if (angle - player->mo->angle < (unsigned)(-ANG90/20))
 	    player->mo->angle = angle + ANG90/21;
 	else
 	    player->mo->angle -= ANG90/20;
@@ -550,6 +564,9 @@ A_FireMissile
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
+    // UNUSED:
+    (void)psp;
+
     player->ammo[weaponinfo[player->readyweapon].ammo]--;
     P_SpawnPlayerMissile (player->mo, MT_ROCKET);
 }
@@ -563,6 +580,9 @@ A_FireBFG
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
+    // UNUSED:
+    (void)psp;
+
     player->ammo[weaponinfo[player->readyweapon].ammo] -= BFGCELLS;
     P_SpawnPlayerMissile (player->mo, MT_BFG);
 }
@@ -577,6 +597,9 @@ A_FirePlasma
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
+    // UNUSED:
+    (void)psp;
+
     player->ammo[weaponinfo[player->readyweapon].ammo]--;
 
     P_SetPsprite (player,
@@ -646,6 +669,9 @@ A_FirePistol
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
+    // UNUSED:
+    (void)psp;
+
     S_StartSound (player->mo, sfx_pistol);
 
     P_SetMobjState (player->mo, S_PLAY_ATK2);
@@ -670,6 +696,9 @@ A_FireShotgun
 {
     int		i;
 	
+    // UNUSED:
+    (void)psp;
+
     S_StartSound (player->mo, sfx_shotgn);
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
@@ -699,7 +728,9 @@ A_FireShotgun2
     angle_t	angle;
     int		damage;
 		
-	
+    // UNUSED:
+    (void)psp;
+
     S_StartSound (player->mo, sfx_dshtgn);
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
@@ -758,16 +789,25 @@ A_FireCGun
 //
 void A_Light0 (player_t *player, pspdef_t *psp)
 {
+    // UNUSED:
+    (void)psp;
+
     player->extralight = 0;
 }
 
 void A_Light1 (player_t *player, pspdef_t *psp)
 {
+    // UNUSED:
+    (void)psp;
+
     player->extralight = 1;
 }
 
 void A_Light2 (player_t *player, pspdef_t *psp)
 {
+    // UNUSED:
+    (void)psp;
+
     player->extralight = 2;
 }
 
@@ -817,6 +857,9 @@ A_BFGsound
 ( player_t*	player,
   pspdef_t*	psp )
 {
+    // UNUSED:
+    (void)psp;
+
     S_StartSound (player->mo, sfx_bfg);
 }
 

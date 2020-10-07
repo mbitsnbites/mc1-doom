@@ -62,6 +62,8 @@
 #include "m_menu.h"
 
 
+typedef void (*msgroutine_t)(int response);
+
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -100,7 +102,7 @@ int			messageLastMenuActive;
 // timed message = no input from user
 boolean			messageNeedsInput;     
 
-void    (*messageRoutine)(int response);
+msgroutine_t		messageRoutine;
 
 #define SAVESTRINGSIZE 	24
 
@@ -224,7 +226,7 @@ void M_WriteText(int x, int y, char *string);
 int  M_StringWidth(char *string);
 int  M_StringHeight(char *string);
 void M_StartControlPanel(void);
-void M_StartMessage(char *string,void *routine,boolean input);
+void M_StartMessage(char *string,msgroutine_t routine,boolean input);
 void M_StopMessage(void);
 void M_ClearMenus (void);
 
@@ -353,9 +355,9 @@ menuitem_t OptionsMenu[]=
     {1,"M_MESSG",	M_ChangeMessages,'m'},
     {1,"M_DETAIL",	M_ChangeDetail,'g'},
     {2,"M_SCRNSZ",	M_SizeDisplay,'s'},
-    {-1,"",0},
+    {-1,"",		NULL,0},
     {2,"M_MSENS",	M_ChangeSensitivity,'m'},
-    {-1,"",0},
+    {-1,"",		NULL,0},
     {1,"M_SVOL",	M_Sound,'s'}
 };
 
@@ -429,9 +431,9 @@ enum
 menuitem_t SoundMenu[]=
 {
     {2,"M_SFXVOL",M_SfxVol,'s'},
-    {-1,"",0},
+    {-1,"",NULL,0},
     {2,"M_MUSVOL",M_MusicVol,'m'},
-    {-1,"",0}
+    {-1,"",NULL,0}
 };
 
 menu_t  SoundDef =
@@ -592,6 +594,9 @@ void M_LoadSelect(int choice)
 //
 void M_LoadGame (int choice)
 {
+    // UNUSED.
+    (void)choice;
+
     if (netgame)
     {
 	M_StartMessage(LOADNET,NULL,false);
@@ -657,6 +662,9 @@ void M_SaveSelect(int choice)
 //
 void M_SaveGame (int choice)
 {
+    // UNUSED.
+    (void)choice;
+
     if (!usergame)
     {
 	M_StartMessage(SAVEDEAD,NULL,false);
@@ -809,6 +817,9 @@ void M_DrawSound(void)
 
 void M_Sound(int choice)
 {
+    // UNUSED.
+    (void)choice;
+
     M_SetupNextMenu(&SoundDef);
 }
 
@@ -871,6 +882,9 @@ void M_DrawNewGame(void)
 
 void M_NewGame(int choice)
 {
+    // UNUSED.
+    (void)choice;
+
     if (netgame && !demoplayback)
     {
 	M_StartMessage(NEWGAME,NULL,false);
@@ -966,6 +980,9 @@ void M_DrawOptions(void)
 
 void M_Options(int choice)
 {
+    // UNUSED.
+    (void)choice;
+
     M_SetupNextMenu(&OptionsDef);
 }
 
@@ -976,8 +993,9 @@ void M_Options(int choice)
 //
 void M_ChangeMessages(int choice)
 {
-    // warning: unused parameter `int choice'
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     showMessages = 1 - showMessages;
 	
     if (!showMessages)
@@ -1004,7 +1022,9 @@ void M_EndGameResponse(int ch)
 
 void M_EndGame(int choice)
 {
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     if (!usergame)
     {
 	S_StartSound(NULL,sfx_oof);
@@ -1028,19 +1048,25 @@ void M_EndGame(int choice)
 //
 void M_ReadThis(int choice)
 {
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     M_SetupNextMenu(&ReadDef1);
 }
 
 void M_ReadThis2(int choice)
 {
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     M_SetupNextMenu(&ReadDef2);
 }
 
 void M_FinishReadThis(int choice)
 {
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     M_SetupNextMenu(&MainDef);
 }
 
@@ -1096,14 +1122,17 @@ void M_QuitResponse(int ch)
 
 void M_QuitDOOM(int choice)
 {
-  // We pick index 0 which is language sensitive,
-  //  or one at random, between 1 and maximum number.
-  if (language != english )
-    sprintf(endstring,"%s\n\n"DOSY, endmsg[0] );
-  else
-    sprintf(endstring,"%s\n\n"DOSY, endmsg[ (gametic%(NUM_QUITMESSAGES-2))+1 ]);
+    // UNUSED.
+    (void)choice;
+
+    // We pick index 0 which is language sensitive,
+    //  or one at random, between 1 and maximum number.
+    if (language != english )
+        sprintf(endstring,"%s\n\n"DOSY, endmsg[0] );
+    else
+        sprintf(endstring,"%s\n\n"DOSY, endmsg[ (gametic%(NUM_QUITMESSAGES-2))+1 ]);
   
-  M_StartMessage(endstring,M_QuitResponse,true);
+    M_StartMessage(endstring,M_QuitResponse,true);
 }
 
 
@@ -1129,7 +1158,9 @@ void M_ChangeSensitivity(int choice)
 
 void M_ChangeDetail(int choice)
 {
-    choice = 0;
+    // UNUSED.
+    (void)choice;
+
     detailLevel = 1 - detailLevel;
 
     // FIXME - does not work. Remove anyway?
@@ -1226,7 +1257,7 @@ M_DrawSelCell
 void
 M_StartMessage
 ( char*		string,
-  void*		routine,
+  msgroutine_t	routine,
   boolean	input )
 {
     messageLastMenuActive = menuactive;
@@ -1253,7 +1284,7 @@ void M_StopMessage(void)
 //
 int M_StringWidth(char* string)
 {
-    int             i;
+    size_t          i;
     int             w = 0;
     int             c;
 	
@@ -1276,7 +1307,7 @@ int M_StringWidth(char* string)
 //
 int M_StringHeight(char* string)
 {
-    int             i;
+    size_t          i;
     int             h;
     int             height = SHORT(hu_font[0]->height);
 	
@@ -1740,10 +1771,10 @@ void M_Drawer (void)
 {
     static short	x;
     static short	y;
-    short		i;
-    short		max;
+    size_t		i;
+    size_t		max;
     char		string[40];
-    int			start;
+    size_t		start;
 
     inhelpscreens = false;
 
@@ -1786,7 +1817,7 @@ void M_Drawer (void)
     // DRAW MENU
     x = currentMenu->x;
     y = currentMenu->y;
-    max = currentMenu->numitems;
+    max = (size_t)currentMenu->numitems;
 
     for (i=0;i<max;i++)
     {

@@ -757,6 +757,9 @@ S_AdjustSoundParams
     fixed_t	ady;
     angle_t	angle;
 
+    // UNUSED.
+    (void)pitch;
+
     // calculate the distance to sound origin
     //  and clip it if necessary
     adx = abs(listener->x - source->x);

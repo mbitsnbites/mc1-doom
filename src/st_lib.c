@@ -99,6 +99,9 @@ STlib_drawNum
     
     int		neg;
 
+    // UNUSED.
+    (void)refresh;
+
     n->oldnum = *n->num;
 
     neg = num < 0;
@@ -249,7 +252,7 @@ STlib_initBinIcon
 {
     b->x	= x;
     b->y	= y;
-    b->oldval	= 0;
+    b->oldval	= false;
     b->val	= val;
     b->on	= on;
     b->p	= i;

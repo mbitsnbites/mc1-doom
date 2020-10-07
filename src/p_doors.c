@@ -525,7 +525,10 @@ P_SpawnDoorRaiseIn5Mins
   int		secnum )
 {
     vldoor_t*	door;
-	
+
+    // UNUSED.
+    (void)secnum;
+
     door = Z_Malloc ( sizeof(*door), PU_LEVSPEC, 0);
     
     P_AddThinker (&door->thinker);

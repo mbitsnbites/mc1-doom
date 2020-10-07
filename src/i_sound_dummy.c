@@ -64,7 +64,7 @@ int I_StartSound(int id,
     return id;
 }
 
-void I_StopSound (int handle)
+void I_StopSound(int handle)
 {
     (void)handle;
 }
@@ -72,6 +72,7 @@ void I_StopSound (int handle)
 
 int I_SoundIsPlaying(int handle)
 {
+    (void)handle;
     return 0;
 }
 
@@ -122,12 +123,12 @@ void I_PlaySong(int handle, int looping)
     (void)looping;
 }
 
-void I_PauseSong (int handle)
+void I_PauseSong(int handle)
 {
     (void)handle;
 }
 
-void I_ResumeSong (int handle)
+void I_ResumeSong(int handle)
 {
     (void)handle;
 }

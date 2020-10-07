@@ -65,7 +65,25 @@ set(SRCS
 		v_video.c
 		z_zone.c)
 
-set(LIBS "")
+# Enable sanitizers in debug builds.
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  list(APPEND SANITIZERS
+       $<$<CONFIG:Debug>:-fsanitize=address>
+       $<$<CONFIG:Debug>:-fsanitize=undefined>)
+endif()
+
+# More warnings.
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  list(APPEND OPTS
+       -Wall
+       -Wextra)
+endif()
+
+if (UNIX)
+  list(APPEND DEFS
+       -DNORMALUNIX
+       -DLINUX)
+endif()
 
 # Video.
 find_package(SDL)
@@ -81,9 +99,14 @@ endif()
 list(APPEND SRCS i_sound_dummy.c)
 
 # Network.
-list(APPEND SRCS i_net.c)
+if (UNIX)
+  list(APPEND SRCS i_net.c)
+else()
+  list(APPEND SRCS i_net_dummy.c)
+endif()
 
 add_executable(mc1doom ${SRCS})
-target_compile_definitions(mc1doom PRIVATE -DNORMALUNIX -DLINUX)
-target_link_libraries(mc1doom PRIVATE ${LIBS})
+target_compile_definitions(mc1doom PRIVATE ${DEFS})
+target_compile_options(mc1doom PRIVATE ${OPTS} ${SANITIZERS})
+target_link_libraries(mc1doom PRIVATE ${LIBS} ${SANITIZERS})
 

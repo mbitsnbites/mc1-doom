@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stddef.h>
 
 #include "doomdef.h" 
 #include "doomstat.h"
@@ -188,10 +189,10 @@ int             mousex;
 int		mousey;         
 
 int             dclicktime;
-int		dclickstate;
+boolean		dclickstate;
 int		dclicks; 
 int             dclicktime2;
-int		dclickstate2;
+boolean		dclickstate2;
 int		dclicks2;
 
 // joystick values are repeated 
@@ -215,9 +216,9 @@ void*		statcopy;				// for statistics driver
  
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
-    int		i;
+    size_t	i;
     int		sum = 0; 
-	 
+
     for (i=0 ; i< sizeof(*cmd)/4 - 1 ; i++) 
 	sum += ((int *)cmd)[i]; 
 		 
@@ -1151,6 +1152,7 @@ void G_WorldDone (void)
 	  case 31:
 	    if (!secretexit)
 		break;
+	    // Falls through.
 	  case 6:
 	  case 11:
 	  case 20:

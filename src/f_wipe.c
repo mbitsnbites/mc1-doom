@@ -71,6 +71,9 @@ wipe_initColorXForm
   int	height,
   int	ticks )
 {
+    // UNUSED.
+    (void)ticks;
+
     memcpy(wipe_scr, wipe_scr_start, width*height);
     return 0;
 }
@@ -127,6 +130,11 @@ wipe_exitColorXForm
   int	height,
   int	ticks )
 {
+    // UNUSED.
+    (void)width;
+    (void)height;
+    (void)ticks;
+
     return 0;
 }
 
@@ -140,7 +148,10 @@ wipe_initMelt
   int	ticks )
 {
     int i, r;
-    
+
+    // UNUSED.
+    (void)ticks;
+
     // copy start screen to main screen
     memcpy(wipe_scr, wipe_scr_start, width*height);
     
@@ -225,6 +236,11 @@ wipe_exitMelt
   int	height,
   int	ticks )
 {
+    // UNUSED.
+    (void)width;
+    (void)height;
+    (void)ticks;
+
     Z_Free(y);
     return 0;
 }
@@ -236,6 +252,12 @@ wipe_StartScreen
   int	width,
   int	height )
 {
+    // UNUSED.
+    (void)x;
+    (void)y;
+    (void)width;
+    (void)height;
+
     wipe_scr_start = screens[2];
     I_ReadScreen(wipe_scr_start);
     return 0;
@@ -269,6 +291,10 @@ wipe_ScreenWipe
 	wipe_initColorXForm, wipe_doColorXForm, wipe_exitColorXForm,
 	wipe_initMelt, wipe_doMelt, wipe_exitMelt
     };
+
+    // UNUSED.
+    (void)x;
+    (void)y;
 
     void V_MarkRect(int, int, int, int);
 

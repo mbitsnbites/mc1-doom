@@ -137,7 +137,7 @@ void W_AddFile (char *filename)
 {
     wadinfo_t		header;
     lumpinfo_t*		lump_p;
-    unsigned		i;
+    int			i;
     int			handle;
     int			length;
     int			startlump;
@@ -246,7 +246,7 @@ void W_Reload (void)
     wadinfo_t		header;
     int			lumpcount;
     lumpinfo_t*		lump_p;
-    unsigned		i;
+    int			i;
     int			handle;
     int			length;
     filelump_t*		fileinfo;
@@ -357,7 +357,7 @@ int W_NumLumps (void)
 // Returns -1 if name not found.
 //
 
-int W_CheckNumForName (char* name)
+int W_CheckNumForName (const char* name)
 {
     union {
 	char	s[9];
@@ -405,7 +405,7 @@ int W_CheckNumForName (char* name)
 // W_GetNumForName
 // Calls W_CheckNumForName, but bombs out if not found.
 //
-int W_GetNumForName (char* name)
+int W_GetNumForName (const char* name)
 {
     int	i;
 
@@ -486,7 +486,7 @@ W_CacheLumpNum
 ( int		lump,
   int		tag )
 {
-    if ((unsigned)lump >= numlumps)
+    if (lump < 0 || lump >= numlumps)
 	I_Error ("W_CacheLumpNum: %i >= numlumps",lump);
 		
     if (!lumpcache[lump])

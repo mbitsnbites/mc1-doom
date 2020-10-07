@@ -365,7 +365,7 @@ void P_NewChaseDir (mobj_t*	actor)
     
     dirtype_t	d[3];
     
-    int		tdir;
+    dirtype_t	tdir;
     dirtype_t	olddir;
     
     dirtype_t	turnaround;
@@ -398,7 +398,7 @@ void P_NewChaseDir (mobj_t*	actor)
 	&& d[2] != DI_NODIR)
     {
 	actor->movedir = diags[((deltay<0)<<1)+(deltax>0)];
-	if (actor->movedir != turnaround && P_TryWalk(actor))
+	if (actor->movedir != (int)turnaround && P_TryWalk(actor))
 	    return;
     }
 
@@ -463,7 +463,7 @@ void P_NewChaseDir (mobj_t*	actor)
     else
     {
 	for ( tdir=DI_SOUTHEAST;
-	      tdir != (DI_EAST-1);
+	      tdir != (dirtype_t)(DI_EAST-1);
 	      tdir-- )
 	{
 	    if (tdir!=turnaround)
@@ -1774,6 +1774,9 @@ A_OpenShotgun2
 ( player_t*	player,
   pspdef_t*	psp )
 {
+    // UNUSED.
+    (void)psp;
+
     S_StartSound (player->mo, sfx_dbopn);
 }
 
@@ -1782,6 +1785,9 @@ A_LoadShotgun2
 ( player_t*	player,
   pspdef_t*	psp )
 {
+    // UNUSED.
+    (void)psp;
+
     S_StartSound (player->mo, sfx_dbload);
 }
 
@@ -1809,7 +1815,10 @@ void A_BrainAwake (mobj_t* mo)
 {
     thinker_t*	thinker;
     mobj_t*	m;
-	
+
+    // UNUSED.
+    (void)mo;
+
     // find all the target spots
     numbraintargets = 0;
     braintargeton = 0;
@@ -1837,6 +1846,9 @@ void A_BrainAwake (mobj_t* mo)
 
 void A_BrainPain (mobj_t*	mo)
 {
+    // UNUSED.
+    (void)mo;
+
     S_StartSound (NULL,sfx_bospn);
 }
 
@@ -1890,6 +1902,9 @@ void A_BrainExplode (mobj_t* mo)
 
 void A_BrainDie (mobj_t*	mo)
 {
+    // UNUSED.
+    (void)mo;
+
     G_ExitLevel ();
 }
 
@@ -1917,16 +1932,6 @@ void A_BrainSpit (mobj_t*	mo)
     S_StartSound(NULL, sfx_bospit);
 }
 
-
-
-void A_SpawnFly (mobj_t* mo);
-
-// travelling cube sound
-void A_SpawnSound (mobj_t* mo)	
-{
-    S_StartSound (mo,sfx_boscub);
-    A_SpawnFly(mo);
-}
 
 void A_SpawnFly (mobj_t* mo)
 {
@@ -1984,6 +1989,12 @@ void A_SpawnFly (mobj_t* mo)
     P_RemoveMobj (mo);
 }
 
+// travelling cube sound
+void A_SpawnSound (mobj_t* mo)
+{
+    S_StartSound (mo,sfx_boscub);
+    A_SpawnFly(mo);
+}
 
 
 void A_PlayerScream (mobj_t* mo)
