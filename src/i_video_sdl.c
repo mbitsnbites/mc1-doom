@@ -371,6 +371,58 @@ void I_FinishUpdate (void)
         }
 
     }
+    else if (multiply == 4)
+    {
+        unsigned int *olineptrs[4];
+        unsigned int *ilineptr;
+        int x, y, i;
+        unsigned int fouripixels;
+        unsigned int fouropixels;
+
+        ilineptr = (unsigned int *) (screens[0]);
+        for (i=0 ; i<4 ; i++) {
+            olineptrs[i] =
+                (unsigned int *)&((Uint8 *)screen->pixels)[i*screen->pitch];
+        }
+
+        y = SCREENHEIGHT;
+        while (y--)
+        {
+            x = SCREENWIDTH;
+            do
+            {
+                fouripixels = *ilineptr++;
+#ifdef __BIG_ENDIAN__
+                fouripixels = SwapLONG(fouripixels);
+#endif
+                fouropixels = ((fouripixels >> 0) & 0xff) * 0x01010101;
+                *olineptrs[0]++ = fouropixels;
+                *olineptrs[1]++ = fouropixels;
+                *olineptrs[2]++ = fouropixels;
+                *olineptrs[3]++ = fouropixels;
+                fouropixels = ((fouripixels >> 8) & 0xff) * 0x01010101;
+                *olineptrs[0]++ = fouropixels;
+                *olineptrs[1]++ = fouropixels;
+                *olineptrs[2]++ = fouropixels;
+                *olineptrs[3]++ = fouropixels;
+                fouropixels = ((fouripixels >> 16) & 0xff) * 0x01010101;
+                *olineptrs[0]++ = fouropixels;
+                *olineptrs[1]++ = fouropixels;
+                *olineptrs[2]++ = fouropixels;
+                *olineptrs[3]++ = fouropixels;
+                fouropixels = ((fouripixels >> 24) & 0xff) * 0x01010101;
+                *olineptrs[0]++ = fouropixels;
+                *olineptrs[1]++ = fouropixels;
+                *olineptrs[2]++ = fouropixels;
+                *olineptrs[3]++ = fouropixels;
+            } while (x-=4);
+            olineptrs[0] += 3*screen->pitch/4;
+            olineptrs[1] += 3*screen->pitch/4;
+            olineptrs[2] += 3*screen->pitch/4;
+            olineptrs[3] += 3*screen->pitch/4;
+        }
+
+    }
     if ( SDL_MUSTLOCK(screen) ) {
         SDL_UnlockSurface(screen);
     }
@@ -423,6 +475,9 @@ void I_InitGraphics(void)
     if (M_CheckParm("-3"))
         multiply = 3;
 
+    if (M_CheckParm("-4"))
+        multiply = 4;
+
     // check if the user wants to grab the mouse (quite unnice)
     grabMouse = !!M_CheckParm("-grabmouse");
 
@@ -437,6 +492,9 @@ void I_InitGraphics(void)
        a complete-frame rendering application like this.
     */
     switch (video_w/w) {
+        case 4:
+            multiply *= 4;
+            break;
         case 3:
             multiply *= 3;
             break;
@@ -449,7 +507,7 @@ void I_InitGraphics(void)
         default:
                 ;
     }
-    if ( multiply > 3 ) {
+    if ( multiply > 4 ) {
         I_Error("Smallest available mode (%dx%d) is too large!",
                                                 video_w, video_h);
     }
