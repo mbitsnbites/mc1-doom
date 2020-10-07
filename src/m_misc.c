@@ -193,12 +193,6 @@ extern int      showMessages;
 // machine-independent sound params
 extern  int     numChannels;
 
-// UNIX hack, to be removed.
-#ifdef SNDSERV
-extern char*    sndserver_filename;
-extern int      mb_used;
-#endif
-
 #ifdef LINUX
 char*           mousetype;
 char*           mousedev;
@@ -236,13 +230,6 @@ default_t       defaults[] =
     {"key_use", &key_use, ' ', NULL, NULL, 0, 0},
     {"key_strafe", &key_strafe, KEY_RALT, NULL, NULL, 0, 0},
     {"key_speed", &key_speed, KEY_RSHIFT, NULL, NULL, 0, 0},
-
-// UNIX hack, to be removed.
-#ifdef SNDSERV
-    {"sndserver", NULL, 0, &sndserver_filename, "sndserver", 0, 0},
-    {"mb_used", &mb_used, 2, NULL, NULL},
-#endif
-
 #endif
 
 #ifdef LINUX

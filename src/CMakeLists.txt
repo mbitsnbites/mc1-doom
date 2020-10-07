@@ -83,6 +83,7 @@ if (UNIX)
   list(APPEND DEFS
        -DNORMALUNIX
        -DLINUX)
+  list(APPEND LIBS m)
 endif()
 
 # Video.
@@ -95,8 +96,13 @@ else()
 endif()
 
 # Sound.
-# TODO(m): Add something that works, e.g. ALSA.
-list(APPEND SRCS i_sound_dummy.c)
+find_package(ALSA)
+if(ALSA_FOUND)
+  list(APPEND SRCS i_sound_alsa.c)
+  list(APPEND LIBS ${ALSA_LIBRARIES})
+else()
+  list(APPEND SRCS i_sound_dummy.c)
+endif()
 
 # Network.
 if (UNIX)
