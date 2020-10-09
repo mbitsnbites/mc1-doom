@@ -18,16 +18,15 @@
 //
 //-----------------------------------------------------------------------------
 
-#if defined(NORMALUNIX) || defined(MC1)
 #include <ctype.h>
-#include <sys/types.h>
 #include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+
 #include <unistd.h>
-#include <malloc.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #define O_BINARY                0
-#endif
 
 #include "doomtype.h"
 #include "m_swap.h"
