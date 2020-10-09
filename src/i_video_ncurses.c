@@ -27,16 +27,13 @@
 #include <ncurses.h>
 #include <stdlib.h>
 
-static const char COL_TO_CHAR[] = " .-=+oq*O0X8@#";
+static const char COL_TO_CHAR[] = " .-~=+cuoaqO0X8@#";
+#define NUM_CHAR_LEVELS ((sizeof (COL_TO_CHAR) / sizeof (COL_TO_CHAR[0])) - 1)
 
 static boolean do_color;
-static boolean use_custom_colors;
 static int num_colors;
-static short palette_lut[256];
-static byte short_palette[256 * 3];  // Actually num_colors * 3 entries.
-
-static byte gamma_lut[256];
-#define INV_GAMMA (1.0f / 1.5f)
+static byte palette_lut[256];
+static byte short_palette[257 * 3];  // Actually (num_colors+1) * 3 entries.
 
 static int sqr_diff (int a, int b)
 {
@@ -44,27 +41,9 @@ static int sqr_diff (int a, int b)
     return diff * diff;
 }
 
-static void rgb_to_yuv (int r, int g, int b, int* y, int* u, int* v)
-{
-    *y = ((66 * r + 129 * g + 25 * b + 128) >> 8) + 16;
-    *u = ((-38 * r - 74 * g + 112 * b + 128) >> 8) + 128;
-    *v = ((112 * r - 94 * g - 18 * b + 128) >> 8) + 128;
-}
-
 static int color_diff (int r1, int g1, int b1, int r2, int g2, int b2)
 {
-#if 1
-    // TODO(m): Is YUV the best color space for this?
-    int y1, u1, v1;
-    int y2, u2, v2;
-    rgb_to_yuv (r1, g1, b1, &y1, &u1, &v1);
-    rgb_to_yuv (r2, g2, b2, &y2, &u2, &v2);
-
-    // We weigh the Y component stronger.
-    return 3 * sqr_diff (y1, y2) + sqr_diff (u1, u2) + sqr_diff (v1, v2);
-#else
     return sqr_diff (r1, r2) + sqr_diff (g1, g2) + sqr_diff (b1, b2);
-#endif
 }
 
 void I_InitGraphics (void)
@@ -72,7 +51,7 @@ void I_InitGraphics (void)
     int i;
 
     // Allocate memory for the framebuffer.
-    screens[0] = (unsigned char*)malloc (SCREENWIDTH * SCREENHEIGHT);
+    screens[0] = (byte*)malloc (SCREENWIDTH * SCREENHEIGHT);
 
     initscr ();
     cbreak ();
@@ -82,54 +61,31 @@ void I_InitGraphics (void)
 
     // Detect color capabilities.
     do_color = false;
-    use_custom_colors = false;
     if (has_colors () == TRUE)
     {
+// Note: init_color() appears to have no effect on macOS terminals.
+#if !defined(__APPLE__)
         start_color ();
         num_colors = ((COLOR_PAIRS - 1) < 256) ? (COLOR_PAIRS - 1) : 256;
         num_colors = (COLORS < num_colors) ? COLORS : num_colors;
 
-#if !defined(__APPLE__)
-        // init_color() appears to have no effect on macOS terminals.
-        if (can_change_color () == TRUE)
-            use_custom_colors = true;
-#endif
-
-        for (i = 0; i < num_colors; ++i)
+        if (num_colors > 100 && can_change_color () == TRUE)
         {
-            if (!use_custom_colors)
+            for (i = 0; i < num_colors; ++i)
             {
-                // Query the curses color.
-                short rs;
-                short gs;
-                short bs;
-                color_content ((short)i, &rs, &gs, &bs);
-                short_palette[i * 3 + 0] = (byte) ((255 * (int)rs) / 1000);
-                short_palette[i * 3 + 1] = (byte) ((255 * (int)gs) / 1000);
-                short_palette[i * 3 + 2] = (byte) ((255 * (int)bs) / 1000);
+                // Generate a curses pair.
+                init_pair (i + 1, i, i);
             }
 
-            // Generate a curses pair.
-            init_pair (i + 1, i, i);
-        }
+            // Let the short palette wrap by appending the first element last.
+            short_palette[num_colors * 3 + 0] = short_palette[0];
+            short_palette[num_colors * 3 + 1] = short_palette[1];
+            short_palette[num_colors * 3 + 2] = short_palette[2];
 
-        do_color = true;
-    }
-    else
-    {
-        num_colors = (int)(sizeof (COL_TO_CHAR) - 1);
-        for (i = 0; i < num_colors; ++i)
-        {
-            byte col = (byte) ((255 * i) / (num_colors - 1));
-            short_palette[i * 3 + 0] = col;
-            short_palette[i * 3 + 1] = col;
-            short_palette[i * 3 + 2] = col;
+            do_color = true;
         }
+#endif
     }
-
-    // Initialize the gamma LUT (we want to brighten the colors).
-    for (i = 0; i < 256; ++i)
-        gamma_lut[i] = (byte) (powf ((float)i / 255.0f, INV_GAMMA) * 255.0f);
 
 // Redirect stderr to /dev/null.
 // TODO(m): Maybe redirect to a pipe and show it in I_ShutdownGraphics?
@@ -162,18 +118,19 @@ void I_SetPalette (byte* palette)
     int next_pal_idx;
     int i;
     int j;
-    int best_idx;
+    int best_value;
     int best_err;
     int err;
     int r;
     int g;
     int b;
+    int brightness;
     short rs;
     short gs;
     short bs;
     int col_div;
 
-    if (use_custom_colors)
+    if (do_color)
     {
         // Create a smaller palette consisting of num_colors.
         next_pal_idx = 0;
@@ -196,7 +153,7 @@ void I_SetPalette (byte* palette)
             col_div = next_pal_idx - pal_idx;
             r = (r + (col_div >> 1)) / col_div;
             g = (g + (col_div >> 1)) / col_div;
-            b = (b + (col_div >> 1)) / col_div;
+            b =  (b + (col_div >> 1)) / col_div;
 
             // Store the average color in the short palette.
             short_palette[i * 3 + 0] = (byte)r;
@@ -209,34 +166,51 @@ void I_SetPalette (byte* palette)
             bs = (short)((1000 * b) / 255);
             init_color ((short)i, rs, gs, bs);
         }
-    }
 
-    // Define the optimal palette -> short_palette LUT.
-    for (i = 0; i < 256; ++i)
-    {
-        // The color that we want.
-        r = (int)gamma_lut[palette[i * 3 + 0]];
-        g = (int)gamma_lut[palette[i * 3 + 1]];
-        b = (int)gamma_lut[palette[i * 3 + 2]];
-
-        // Find the closest match.
-        best_err = 99999999;
-        best_idx = 0;
-        for (j = 0; j < num_colors; ++j)
+        // Define the optimal palette -> short_palette LUT.
+        for (i = 0; i < 256; ++i)
         {
-            err = color_diff (r,
-                              g,
-                              b,
-                              (int)short_palette[j * 3 + 0],
-                              (int)short_palette[j * 3 + 1],
-                              (int)short_palette[j * 3 + 2]);
-            if (err < best_err)
+            // The color that we want.
+            r = (int)palette[i * 3 + 0];
+            g = (int)palette[i * 3 + 1];
+            b = (int)palette[i * 3 + 2];
+
+            // Find the closest match.
+            best_err = 99999999;
+            best_value = 0;
+            for (j = 0; j < num_colors; ++j)
             {
-                best_idx = j;
-                best_err = err;
+                err = color_diff (r,
+                                  g,
+                                  b,
+                                  (int)short_palette[j * 3 + 0],
+                                  (int)short_palette[j * 3 + 1],
+                                  (int)short_palette[j * 3 + 2]);
+                if (err < best_err)
+                {
+                    best_value = j;
+                    best_err = err;
+                }
             }
+            palette_lut[i] = (byte)best_value;
         }
-        palette_lut[i] = (short)best_idx;
+    }
+    else
+    {
+        for (i = 0; i < 256; ++i)
+        {
+            // The color that we want.
+            r = (int)palette[i * 3 + 0];
+            g = (int)palette[i * 3 + 1];
+            b = (int)palette[i * 3 + 2];
+
+            // Convert to grey scale.
+            brightness = (76 * r + 150 * g + 30 * b) >> 8;
+
+            // Convert to a character.
+            best_value = ((NUM_CHAR_LEVELS - 1) * brightness + 128) / 255;
+            palette_lut[i] = (byte)COL_TO_CHAR[best_value];
+        }
     }
 }
 
@@ -250,14 +224,6 @@ void I_FinishUpdate (void)
     int text_height;
     int x;
     int y;
-    int u;
-    int v;
-    int color;
-    byte* row;
-    char c[2];
-
-    c[0] = ' ';
-    c[1] = 0;
 
     // Get consol size.
     text_width = COLS;
@@ -266,25 +232,32 @@ void I_FinishUpdate (void)
     // We just do nearest neigbour sampling.
     for (y = 0; y < text_height; ++y)
     {
-        v = (y * SCREENHEIGHT) / text_height;
-        row = &screens[0][v * SCREENWIDTH];
-        for (x = 0; x < text_width; ++x)
+        int v = (y * SCREENHEIGHT) / text_height;
+        byte* row = &screens[0][v * SCREENWIDTH];
+        if (do_color)
         {
-            u = (x * SCREENWIDTH) / text_width;
-            color = (int)palette_lut[row[u]];
-
-            if (do_color)
+            int last_pair = 1;
+            attron (COLOR_PAIR (last_pair));
+            for (x = 0; x < text_width; ++x)
             {
-                // Pick a color from the palette and print it as a space char.
-                attron (COLOR_PAIR (1 + color));
-                mvwprintw (stdscr, y, x, c);
-                attroff (COLOR_PAIR (1 + color));
+                int u = (x * SCREENWIDTH) / text_width;
+                int pair = 1 + (int)palette_lut[row[u]];
+                if (pair != last_pair)
+                {
+                    attroff (COLOR_PAIR (last_pair));
+                    attron (COLOR_PAIR (pair));
+                    last_pair = pair;
+                }
+                mvaddch (y, x, ' ');
             }
-            else
+            attroff (COLOR_PAIR (last_pair));
+        }
+        else
+        {
+            for (x = 0; x < text_width; ++x)
             {
-                // Convert the color to a character, and print it.
-                c[0] = (char)COL_TO_CHAR[color];
-                mvwprintw (stdscr, y, x, c);
+                int u = (x * SCREENWIDTH) / text_width;
+                mvaddch (y, x, (chtype)palette_lut[row[u]]);
             }
         }
     }
