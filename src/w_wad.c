@@ -123,6 +123,7 @@ void W_AddFile (char *filename)
     int                 i;
     int                 handle;
     int                 length;
+    ssize_t             bytes_read;
     int                 startlump;
     filelump_t*         fileinfo;
     filelump_t*         fileinfo_malloc;
@@ -162,14 +163,15 @@ void W_AddFile (char *filename)
     else
     {
         // WAD file
-        read (handle, &header, sizeof(header));
+        if (read (handle, &header, sizeof(header)) != sizeof (header))
+            I_Error ("Unable to read WAD header from %s", filename);
         if (strncmp(header.identification,"IWAD",4))
         {
             // Homebrew levels?
             if (strncmp(header.identification,"PWAD",4))
             {
-                I_Error ("Wad file %s doesn't have IWAD "
-                         "or PWAD id\n", filename);
+                I_Error ("Wad file %s doesn't have IWAD or PWAD id\n",
+                         filename);
             }
 
             // ???modifiedgame = true;
@@ -177,17 +179,19 @@ void W_AddFile (char *filename)
         header.numlumps = LONG(header.numlumps);
         header.infotableofs = LONG(header.infotableofs);
         length = header.numlumps*sizeof(filelump_t);
-        fileinfo_malloc = malloc (length);
+        fileinfo_malloc = (filelump_t*)malloc (length);
         if (!fileinfo_malloc)
             I_Error ("Couldn't malloc %d bytes for filelumps");
         fileinfo = fileinfo_malloc;
         lseek (handle, header.infotableofs, SEEK_SET);
-        read (handle, fileinfo, length);
+        bytes_read = read (handle, fileinfo, length);
+        if (bytes_read != length && bytes_read != 0)
+            I_Error ("Unable to read lumps from %s", filename);
         numlumps += header.numlumps;
     }
 
     // Fill in lumpinfo
-    lumpinfo = realloc (lumpinfo, numlumps*sizeof(lumpinfo_t));
+    lumpinfo = (lumpinfo_t*)realloc (lumpinfo, numlumps * sizeof (lumpinfo_t));
 
     if (!lumpinfo)
     {
@@ -228,6 +232,7 @@ void W_Reload (void)
     int                 i;
     int                 handle;
     int                 length;
+    ssize_t             bytes_read;
     filelump_t*         fileinfo;
 
     if (!reloadname)
@@ -236,13 +241,16 @@ void W_Reload (void)
     if ( (handle = open (reloadname,O_RDONLY | O_BINARY)) == -1)
         I_Error ("W_Reload: couldn't open %s",reloadname);
 
-    read (handle, &header, sizeof(header));
-    lumpcount = LONG(header.numlumps);
+    if (read (handle, &header, sizeof (header)) != sizeof (header))
+        I_Error ("Unable to reload WAD header from %s", reloadname);
+    lumpcount = LONG (header.numlumps);
     header.infotableofs = LONG(header.infotableofs);
     length = lumpcount*sizeof(filelump_t);
-    fileinfo = malloc (length);
+    fileinfo = (filelump_t*)malloc (length);
     lseek (handle, header.infotableofs, SEEK_SET);
-    read (handle, fileinfo, length);
+    bytes_read = read (handle, fileinfo, length);
+    if (bytes_read != length && bytes_read != 0)
+        I_Error ("Unable to reload lumps from %s", reloadname);
 
     // Fill in lumpinfo
     lump_p = &lumpinfo[reloadlump];
@@ -469,12 +477,9 @@ W_CacheLumpNum
 //
 // W_CacheLumpName
 //
-void*
-W_CacheLumpName
-( char*         name,
-  int           tag )
+void* W_CacheLumpName (const char* name, int tag)
 {
-    return W_CacheLumpNum (W_GetNumForName(name), tag);
+    return W_CacheLumpNum (W_GetNumForName (name), tag);
 }
 
 //

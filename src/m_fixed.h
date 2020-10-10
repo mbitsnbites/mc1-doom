@@ -37,4 +37,6 @@ fixed_t FixedMul        (fixed_t a, fixed_t b);
 fixed_t FixedDiv        (fixed_t a, fixed_t b);
 fixed_t FixedDiv2       (fixed_t a, fixed_t b);
 
+#define INT_TO_FIXED(x) (fixed_t)(((unsigned)(fixed_t)(x)) << FRACBITS)
+
 #endif  // __M_FIXED__

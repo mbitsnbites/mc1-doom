@@ -497,7 +497,7 @@ char            title[128];
 //
 // D_AddFile
 //
-void D_AddFile (char *file)
+void D_AddFile (const char *file)
 {
     int     numwadfiles;
     char    *newfile;
@@ -505,7 +505,7 @@ void D_AddFile (char *file)
     for (numwadfiles = 0 ; wadfiles[numwadfiles] ; numwadfiles++)
         ;
 
-    newfile = malloc (strlen(file)+1);
+    newfile = (char*)malloc (strlen (file) + 1);
     strcpy (newfile, file);
 
     wadfiles[numwadfiles] = newfile;
@@ -713,8 +713,9 @@ void FindResponseFile (void)
             fseek (handle,0,SEEK_END);
             size = ftell(handle);
             fseek (handle,0,SEEK_SET);
-            file = malloc (size);
-            fread (file,size,1,handle);
+            file = (char*)malloc (size);
+            if (fread (file, 1, size, handle) != (size_t)size)
+                I_Error("Unable to read file %s", &myargv[i][1]);
             fclose (handle);
 
             // KEEP ALL CMDLINE ARGS FOLLOWING @RESPONSEFILE ARG
@@ -722,8 +723,8 @@ void FindResponseFile (void)
                 moreargs[index++] = myargv[k];
 
             firstargv = myargv[0];
-            myargv = malloc(sizeof(char *)*MAXARGVS);
-            memset(myargv,0,sizeof(char *)*MAXARGVS);
+            myargv = (char**)malloc (sizeof (char*) * MAXARGVS);
+            memset (myargv, 0, sizeof (char*) * MAXARGVS);
             myargv[0] = firstargv;
 
             infile = file;

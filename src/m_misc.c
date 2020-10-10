@@ -312,7 +312,6 @@ void M_LoadDefaults (void)
     char        strparm[100];
     char*       newstring;
     int         parm;
-    boolean     isstring;
 
     // set everything to base values
     numdefaults = sizeof(defaults)/sizeof(defaults[0]);
@@ -340,28 +339,28 @@ void M_LoadDefaults (void)
     {
         while (!feof(f))
         {
-            isstring = false;
             if (fscanf (f, "%79s %[^\n]\n", def, strparm) == 2)
             {
+                newstring = NULL;
                 if (strparm[0] == '"')
                 {
                     // get a string default
-                    isstring = true;
-                    len = strlen(strparm);
-                    newstring = (char *) malloc(len);
-                    strparm[len-1] = 0;
-                    strcpy(newstring, strparm+1);
+                    len = strlen (strparm);
+                    newstring = (char*)malloc (len);
+                    strparm[len - 1] = 0;
+                    strcpy (newstring, strparm + 1);
                 }
                 else if (strparm[0] == '0' && strparm[1] == 'x')
-                    sscanf(strparm+2, "%x", (unsigned*)&parm);
+                    sscanf (strparm + 2, "%x", (unsigned*)&parm);
                 else
-                    sscanf(strparm, "%i", &parm);
-                for (i=0 ; i<numdefaults ; i++)
-                    if (!strcmp(def, defaults[i].name))
+                    sscanf (strparm, "%i", &parm);
+                for (i = 0; i < numdefaults; i++)
+                    if (!strcmp (def, defaults[i].name))
                     {
-                        if (defaults[i].location != NULL && !isstring)
+                        if (defaults[i].location != NULL && newstring == NULL)
                             *defaults[i].location = parm;
-                        else if (defaults[i].str_location != NULL && isstring)
+                        else if (defaults[i].str_location != NULL &&
+                                 newstring != NULL)
                             *defaults[i].str_location = newstring;
                         break;
                     }
@@ -418,7 +417,7 @@ WritePCXfile
     pcx_t*      pcx;
     byte*       pack;
 
-    pcx = Z_Malloc (width*height*2+1000, PU_STATIC, NULL);
+    pcx = (pcx_t*)Z_Malloc (width * height * 2 + 1000, PU_STATIC, NULL);
 
     pcx->manufacturer = 0x0a;           // PCX id
     pcx->version = 5;                   // 256 color

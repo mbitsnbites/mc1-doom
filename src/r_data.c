@@ -573,26 +573,29 @@ void R_InitFlats (void)
 //
 void R_InitSpriteLumps (void)
 {
-    int         i;
-    patch_t     *patch;
+    int i;
+    patch_t* patch;
 
     firstspritelump = W_GetNumForName ("S_START") + 1;
     lastspritelump = W_GetNumForName ("S_END") - 1;
 
     numspritelumps = lastspritelump - firstspritelump + 1;
-    spritewidth = Z_Malloc (numspritelumps*sizeof(*spritewidth), PU_STATIC, 0);
-    spriteoffset = Z_Malloc (numspritelumps*sizeof(*spriteoffset), PU_STATIC, 0);
-    spritetopoffset = Z_Malloc (numspritelumps*sizeof(*spritetopoffset), PU_STATIC, 0);
+    spritewidth = (fixed_t*)Z_Malloc (
+        numspritelumps * sizeof (*spritewidth), PU_STATIC, 0);
+    spriteoffset = (fixed_t*)Z_Malloc (
+        numspritelumps * sizeof (*spriteoffset), PU_STATIC, 0);
+    spritetopoffset = (fixed_t*)Z_Malloc (
+        numspritelumps * sizeof (*spritetopoffset), PU_STATIC, 0);
 
-    for (i=0 ; i< numspritelumps ; i++)
+    for (i = 0; i < numspritelumps; i++)
     {
-        if (!(i&63))
+        if (!(i & 63))
             printf (".");
 
-        patch = W_CacheLumpNum (firstspritelump+i, PU_CACHE);
-        spritewidth[i] = SHORT(patch->width)<<FRACBITS;
-        spriteoffset[i] = SHORT(patch->leftoffset)<<FRACBITS;
-        spritetopoffset[i] = SHORT(patch->topoffset)<<FRACBITS;
+        patch = (patch_t*)W_CacheLumpNum (firstspritelump + i, PU_CACHE);
+        spritewidth[i] = INT_TO_FIXED (SHORT (patch->width));
+        spriteoffset[i] = INT_TO_FIXED (SHORT (patch->leftoffset));
+        spritetopoffset[i] = INT_TO_FIXED (SHORT (patch->topoffset));
     }
 }
 
