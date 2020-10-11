@@ -83,9 +83,7 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
 endif()
 
 if (UNIX)
-  list(APPEND DEFS
-       -DNORMALUNIX
-       -DLINUX)
+  list(APPEND DEFS -DNORMALUNIX)
   list(APPEND LIBS m)
 endif()
 

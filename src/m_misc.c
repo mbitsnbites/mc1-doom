@@ -193,11 +193,6 @@ extern int      showMessages;
 // machine-independent sound params
 extern  int     numChannels;
 
-#ifdef LINUX
-char*           mousetype;
-char*           mousedev;
-#endif
-
 extern char*    chat_macros[];
 
 typedef struct
@@ -230,11 +225,6 @@ default_t       defaults[] =
     {"key_use", &key_use, ' ', NULL, NULL, 0, 0},
     {"key_strafe", &key_strafe, KEY_RALT, NULL, NULL, 0, 0},
     {"key_speed", &key_speed, KEY_RSHIFT, NULL, NULL, 0, 0},
-#endif
-
-#ifdef LINUX
-    {"mousedev", NULL, 0, &mousedev, "/dev/ttyS0", 0, 0},
-    {"mousetype", NULL, 0, &mousetype, "microsoft", 0, 0},
 #endif
 
     {"use_mouse", &usemouse, 1, NULL, NULL, 0, 0},
