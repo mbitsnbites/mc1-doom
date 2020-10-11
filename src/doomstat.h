@@ -82,9 +82,12 @@ extern  boolean         respawnmonsters;
 // Netgame? Only true if >1 player.
 extern  boolean netgame;
 
-// Flag: true only if started as net deathmatch.
+// Flag:
+//  0 = no deathmatch
+//  1 = if started as net deathmatch
+//  2 = if started as net altdeath
 // An enum might handle altdeath/cooperative better.
-extern  boolean deathmatch;
+extern  int deathmatch;
 
 // -------------------------
 // Internal parameters for sound rendering.

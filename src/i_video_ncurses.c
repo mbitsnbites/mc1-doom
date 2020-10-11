@@ -48,8 +48,6 @@ static int color_diff (int r1, int g1, int b1, int r2, int g2, int b2)
 
 void I_InitGraphics (void)
 {
-    int i;
-
     // Allocate memory for the framebuffer.
     screens[0] = (byte*)malloc (SCREENWIDTH * SCREENHEIGHT);
 
@@ -71,7 +69,7 @@ void I_InitGraphics (void)
 
         if (num_colors > 100 && can_change_color () == TRUE)
         {
-            for (i = 0; i < num_colors; ++i)
+            for (int i = 0; i < num_colors; ++i)
             {
                 // Generate a curses pair.
                 init_pair (i + 1, i, i);

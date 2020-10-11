@@ -101,7 +101,7 @@ int             starttime;              // for comparative timing purposes
 
 boolean         viewactive;
 
-boolean         deathmatch;             // only if started as net death
+int             deathmatch;             // only if started as net death
 boolean         netgame;                // only true if packets are broadcast
 boolean         playeringame[MAXPLAYERS];
 player_t        players[MAXPLAYERS];
@@ -1303,7 +1303,7 @@ void G_DoNewGame (void)
     demoplayback = false;
     netdemo = false;
     netgame = false;
-    deathmatch = false;
+    deathmatch = 0;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
     respawnparm = false;
     fastparm = false;
@@ -1609,7 +1609,7 @@ boolean G_CheckDemoStatus (void)
         demoplayback = false;
         netdemo = false;
         netgame = false;
-        deathmatch = false;
+        deathmatch = 0;
         playeringame[1] = playeringame[2] = playeringame[3] = 0;
         respawnparm = false;
         fastparm = false;

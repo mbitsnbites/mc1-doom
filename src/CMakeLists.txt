@@ -67,14 +67,14 @@ set(SRCS
 		z_zone.c)
 
 # Enable sanitizers in debug builds.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   list(APPEND SANITIZERS
        $<$<CONFIG:Debug>:-fsanitize=address>
        $<$<CONFIG:Debug>:-fsanitize=undefined>)
 endif()
 
 # More warnings.
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   list(APPEND OPTS
        -pedantic
        -W
