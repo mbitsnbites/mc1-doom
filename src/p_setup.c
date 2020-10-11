@@ -160,8 +160,8 @@ void P_LoadSegs (int lump)
         li->v1 = &vertexes[SHORT(ml->v1)];
         li->v2 = &vertexes[SHORT(ml->v2)];
 
-        li->angle = (SHORT(ml->angle))<<16;
-        li->offset = (SHORT(ml->offset))<<16;
+        li->angle = ((unsigned)(int)SHORT(ml->angle))<<16;
+        li->offset = ((unsigned)(int)SHORT(ml->offset))<<16;
         linedef = SHORT(ml->linedef);
         ldef = &lines[linedef];
         li->linedef = ldef;

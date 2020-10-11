@@ -23,6 +23,7 @@
 #include "i_system.h"
 #include "z_zone.h"
 
+#include "m_port.h"
 #include "m_swap.h"
 
 #include "w_wad.h"
@@ -667,7 +668,7 @@ int     R_CheckTextureNumForName (const char *name)
         return 0;
 
     for (i=0 ; i<numtextures ; i++)
-        if (!strncasecmp (textures[i]->name, name, 8) )
+        if (!M_strncmpi (textures[i]->name, name, 8))
             return i;
 
     return -1;

@@ -870,7 +870,7 @@ void M_VerifyNightmare(int ch)
     if (ch != 'y')
         return;
 
-    G_DeferedInitNew(nightmare,epi+1,1);
+    G_DeferedInitNew ((skill_t)nightmare, epi + 1, 1);
     M_ClearMenus ();
 }
 
@@ -882,7 +882,7 @@ void M_ChooseSkill(int choice)
         return;
     }
 
-    G_DeferedInitNew(choice,epi+1,1);
+    G_DeferedInitNew((skill_t)choice,epi+1,1);
     M_ClearMenus ();
 }
 
@@ -1680,7 +1680,7 @@ void M_Drawer (void)
     static short        y;
     size_t              i;
     size_t              max;
-    char                string[40];
+    char                string[100];
     size_t              start;
 
     inhelpscreens = false;

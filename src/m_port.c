@@ -14,29 +14,34 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
+//      Cross-platform routines for portability.
 //
 //-----------------------------------------------------------------------------
 
-#include <string.h>
+#include <ctype.h>
 
 #include "m_port.h"
 
-int myargc;
-char** myargv;
-
-//
-// M_CheckParm
-// Checks for the given parameter in the program's command line arguments.
-// Returns the argument number (1 to argc-1) or 0 if not present
-int M_CheckParm (const char* check)
+int M_strcmpi (const char* s1, const char* s2)
 {
-    int i;
-
-    for (i = 1; i < myargc; i++)
-    {
-        if (!M_strcmpi (check, myargv[i]))
-            return i;
+    while (tolower(*s1) == tolower(*s2)) {
+        if (*s1 == 0)
+            return 0;
+        ++s1;
+        ++s2;
     }
+    return tolower(*s2) - tolower(*s1);
+}
 
-    return 0;
+int M_strncmpi (const char* s1, const char* s2, size_t n)
+{
+    size_t i = 0;
+    while (i < (n - 1) && tolower(*s1) == tolower(*s2)) {
+        if (*s1 == 0)
+            return 0;
+        ++s1;
+        ++s2;
+        ++i;
+    }
+    return tolower(*s2) - tolower(*s1);
 }

@@ -14,29 +14,16 @@
 // GNU General Public License for more details.
 //
 // DESCRIPTION:
+//  Nil.
 //
 //-----------------------------------------------------------------------------
 
-#include <string.h>
+#ifndef __M_PORT__
+#define __M_PORT__
 
-#include "m_port.h"
+#include <stddef.h>
 
-int myargc;
-char** myargv;
+int M_strcmpi (const char* s1, const char* s2);
+int M_strncmpi (const char* s1, const char* s2, size_t n);
 
-//
-// M_CheckParm
-// Checks for the given parameter in the program's command line arguments.
-// Returns the argument number (1 to argc-1) or 0 if not present
-int M_CheckParm (const char* check)
-{
-    int i;
-
-    for (i = 1; i < myargc; i++)
-    {
-        if (!M_strcmpi (check, myargv[i]))
-            return i;
-    }
-
-    return 0;
-}
+#endif  // __M_PORT__

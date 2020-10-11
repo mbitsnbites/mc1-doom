@@ -29,6 +29,7 @@
 #define O_BINARY                0
 
 #include "doomtype.h"
+#include "m_port.h"
 #include "m_swap.h"
 #include "i_system.h"
 #include "z_zone.h"
@@ -47,8 +48,6 @@ lumpinfo_t*             lumpinfo;
 int                     numlumps;
 
 void**                  lumpcache;
-
-#define strcmpi strcasecmp
 
 static void strtoupper (char* s)
 {
@@ -151,7 +150,7 @@ void W_AddFile (char *filename)
     printf (" adding %s\n",filename);
     startlump = numlumps;
 
-    if (strcmpi (filename+strlen(filename)-3 , "wad" ) )
+    if (M_strcmpi (filename + strlen (filename) - 3, "wad"))
     {
         // single lump file
         fileinfo = &singleinfo;

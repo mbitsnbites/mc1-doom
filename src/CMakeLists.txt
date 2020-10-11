@@ -26,6 +26,7 @@ set(SRCS
 		m_fixed.c
 		m_menu.c
 		m_misc.c
+		m_port.c
 		m_random.c
 		m_swap.c
 		p_ceilng.c
@@ -75,6 +76,8 @@ endif()
 # More warnings.
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   list(APPEND OPTS
+       -pedantic
+       -W
        -Wall
        -Wextra)
 endif()

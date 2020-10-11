@@ -27,25 +27,28 @@
 #include <unistd.h>
 
 // TODO(m): This should be implemented by newlib (?!).
-int mkdir (const char *pathname, mode_t mode)
+int mkdir (const char* pathname, mode_t mode)
 {
-  (void)pathname;
-  (void)mode;
-  errno = EACCES;
-  return -1;
+    (void)pathname;
+    (void)mode;
+    errno = EACCES;
+    return -1;
 }
 
 // Emulate access() using stat()?
-int access (const char *pathname, int mode)
+int access (const char* pathname, int mode)
 {
-  struct stat buf;
-  if (stat (pathname, &buf) != 0)
-  {
-    errno = EACCES;
-    return -1;
-  }
+    struct stat buf;
 
-  // We just say: If the file exists, we're good to go.
-  return 0;
+    // UNUSED.
+    (void)mode;
+
+    if (stat (pathname, &buf) != 0)
+    {
+        errno = EACCES;
+        return -1;
+    }
+
+    // We just say: If the file exists, we're good to go.
+    return 0;
 }
-
