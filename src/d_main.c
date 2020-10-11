@@ -29,12 +29,6 @@
 #include <sys/stat.h>
 #include <sys/unistd.h>
 
-#ifdef NORMALUNIX
-#include <unistd.h>
-#include <sys/types.h>
-#include <fcntl.h>
-#endif
-
 #include "doomdef.h"
 #include "doomstat.h"
 
@@ -52,6 +46,7 @@
 #include "m_argv.h"
 #include "m_misc.h"
 #include "m_menu.h"
+#include "m_port.h"
 
 #include "i_system.h"
 #include "i_sound.h"
@@ -529,16 +524,8 @@ void IdentifyVersion (void)
     char*       plutoniawad;
     char*       tntwad;
 
-#if defined(NORMALUNIX) || defined(MC1)
-    char *home;
-    char *doomwaddir;
-#ifdef MC1
-    doomwaddir = ".";
-#else
-    doomwaddir = getenv("DOOMWADDIR");
-    if (!doomwaddir)
-        doomwaddir = ".";
-#endif
+    const char *home;
+    const char *doomwaddir = M_getdoomwaddir();
 
     // Commercial.
     doom2wad = malloc(strlen(doomwaddir)+1+9+1);
@@ -568,16 +555,9 @@ void IdentifyVersion (void)
     doom2fwad = malloc(strlen(doomwaddir)+1+10+1);
     sprintf(doom2fwad, "%s/doom2f.wad", doomwaddir);
 
-#if defined(MC1)
-    home = ".";
-#else
-    home = getenv("HOME");
-    if (!home)
-      I_Error("Please set $HOME to your home directory");
-#endif
+    home = M_gethomedir();
 
     sprintf(basedefault, "%s/.doomrc", home);
-#endif // defined(NORMALUNIX) || defined(MC1)
 
     if (M_CheckParm ("-shdev"))
     {
@@ -620,7 +600,7 @@ void IdentifyVersion (void)
         return;
     }
 
-    if ( !access (doom2fwad,R_OK) )
+    if ( M_fileexists (doom2fwad) )
     {
         gamemode = commercial;
         // C'est ridicule!
@@ -631,42 +611,42 @@ void IdentifyVersion (void)
         return;
     }
 
-    if ( !access (doom2wad,R_OK) )
+    if ( M_fileexists (doom2wad) )
     {
         gamemode = commercial;
         D_AddFile (doom2wad);
         return;
     }
 
-    if ( !access (plutoniawad, R_OK ) )
+    if ( M_fileexists (plutoniawad) )
     {
       gamemode = commercial;
       D_AddFile (plutoniawad);
       return;
     }
 
-    if ( !access ( tntwad, R_OK ) )
+    if ( M_fileexists (tntwad) )
     {
       gamemode = commercial;
       D_AddFile (tntwad);
       return;
     }
 
-    if ( !access (doomuwad,R_OK) )
+    if ( M_fileexists (doomuwad) )
     {
       gamemode = retail;
       D_AddFile (doomuwad);
       return;
     }
 
-    if ( !access (doomwad,R_OK) )
+    if ( M_fileexists (doomwad) )
     {
       gamemode = registered;
       D_AddFile (doomwad);
       return;
     }
 
-    if ( !access (doom1wad,R_OK) )
+    if ( M_fileexists (doom1wad) )
     {
       gamemode = shareware;
       D_AddFile (doom1wad);

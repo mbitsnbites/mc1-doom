@@ -25,5 +25,8 @@
 
 int M_strcmpi (const char* s1, const char* s2);
 int M_strncmpi (const char* s1, const char* s2, size_t n);
+const char* M_gethomedir ();
+const char* M_getdoomwaddir ();
+int M_fileexists (const char* file_name);
 
 #endif  // __M_PORT__

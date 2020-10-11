@@ -20,6 +20,11 @@
 //-----------------------------------------------------------------------------
 
 #include <ctype.h>
+#include <stdlib.h>
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "m_port.h"
 
@@ -48,4 +53,32 @@ int M_strncmpi (const char* s1, const char* s2, size_t n)
         ++i;
     }
     return tolower(*s2) - tolower(*s1);
+}
+
+const char* M_gethomedir ()
+{
+#if defined(MC1)
+    return ".";
+#else
+    const char* home = getenv("HOME");
+    return home ? home : ".";  // TODO(m): Try harder.
+#endif
+}
+
+const char* M_getdoomwaddir ()
+{
+#if defined(MC1)
+    return ".";
+#else
+    const char* waddir = getenv("DOOMWADDIR");
+    return waddir ? waddir : ".";
+#endif
+}
+
+int M_fileexists (const char* file_name)
+{
+    struct stat buf;
+    if (stat (file_name, &buf) != 0)
+        return 0;
+    return 1;
 }

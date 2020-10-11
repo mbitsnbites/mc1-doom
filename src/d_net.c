@@ -91,9 +91,7 @@ unsigned NetbufferChecksum (void)
     c = 0x1234567;
 
     // FIXME -endianess?
-#ifdef NORMALUNIX
     return 0;                   // byte order problems
-#endif
 
     l = (NetbufferSize () - (int)(intptr_t)&(((doomdata_t *)0)->retransmitfrom))/4;
     for (i=0 ; i<l ; i++)

@@ -34,6 +34,7 @@
 
 #include "m_swap.h"
 #include "m_argv.h"
+#include "m_port.h"
 
 #include "w_wad.h"
 
@@ -206,14 +207,13 @@ typedef struct
     int         untranslated;           // lousy hack
 } default_t;
 
-default_t       defaults[] =
+default_t defaults[] =
 {
     {"mouse_sensitivity", &mouseSensitivity, 5, NULL, NULL, 0, 0},
     {"sfx_volume", &snd_SfxVolume, 8, NULL, NULL, 0, 0},
     {"music_volume", &snd_MusicVolume, 8, NULL, NULL, 0, 0},
     {"show_messages", &showMessages, 1, NULL, NULL, 0, 0},
 
-#ifdef NORMALUNIX
     {"key_right", &key_right, KEY_RIGHTARROW, NULL, NULL, 0, 0},
     {"key_left", &key_left, KEY_LEFTARROW, NULL, NULL, 0, 0},
     {"key_up", &key_up, KEY_UPARROW, NULL, NULL, 0, 0},
@@ -225,7 +225,6 @@ default_t       defaults[] =
     {"key_use", &key_use, ' ', NULL, NULL, 0, 0},
     {"key_strafe", &key_strafe, KEY_RALT, NULL, NULL, 0, 0},
     {"key_speed", &key_speed, KEY_RSHIFT, NULL, NULL, 0, 0},
-#endif
 
     {"use_mouse", &usemouse, 1, NULL, NULL, 0, 0},
     {"mouseb_fire", &mousebfire, 0, NULL, NULL, 0, 0},
@@ -471,7 +470,7 @@ void M_ScreenShot (void)
     {
         lbmname[4] = i/10 + '0';
         lbmname[5] = i%10 + '0';
-        if (access(lbmname,0) == -1)
+        if (!M_fileexists (lbmname))
             break;      // file doesn't exist
     }
     if (i==100)
