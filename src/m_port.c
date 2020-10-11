@@ -2,6 +2,7 @@
 //-----------------------------------------------------------------------------
 //
 // Copyright (C) 1993-1996 by id Software, Inc.
+// Copyright (C) 2020 by Marcus Geelnard
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +36,9 @@ int M_strcmpi (const char* s1, const char* s2)
 
 int M_strncmpi (const char* s1, const char* s2, size_t n)
 {
+    if (n == 0)
+        return 0;
+
     size_t i = 0;
     while (i < (n - 1) && tolower(*s1) == tolower(*s2)) {
         if (*s1 == 0)
