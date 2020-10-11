@@ -32,10 +32,6 @@
 
 #include "doomdef.h"
 
-#if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__)
-#include <unistd.h>
-#endif
-
 SDL_Surface *screen;
 
 // Fake mouse handling.
@@ -130,16 +126,7 @@ void I_StartFrame (void)
 
 void I_WaitVBL(int count)
 {
-    // Should we use some other method here?
-#ifdef SGI
-    sginap(1);
-#else
-#ifdef SUN
-    sleep(0);
-#else
-    usleep (count * (1000000/70) );
-#endif
-#endif
+    SDL_Delay (count * (1000/70));
 }
 
 /* This processes SDL events */

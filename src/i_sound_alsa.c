@@ -23,8 +23,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#define _POSIX_SOURCE  // Because ALSA redefines struct timespec otherwise.
 #include <alsa/asoundlib.h>
-
 
 #include "z_zone.h"
 
