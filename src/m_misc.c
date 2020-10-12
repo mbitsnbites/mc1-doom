@@ -240,7 +240,7 @@ default_t defaults[] =
     {"screenblocks", &screenblocks, 9, NULL, NULL, 0, 0},
     {"detaillevel", &detailLevel, 0, NULL, NULL, 0, 0},
 
-    {"snd_channels", &numChannels, 3, NULL, NULL, 0, 0},
+    {"snd_channels", &numChannels, 8, NULL, NULL, 0, 0},
 
     {"usegamma", &usegamma, 0, NULL, NULL, 0, 0},
 
