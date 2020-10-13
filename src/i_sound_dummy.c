@@ -26,32 +26,32 @@
 // This is currently an empty implementation. No sound support yet.
 //
 
-void I_SetChannels()
+void I_InitSound (void)
 {
 }
 
-void I_SetSfxVolume(int volume)
+void I_ShutdownSound (void)
+{
+}
+
+void I_SetSfxVolume (int volume)
 {
     (void)volume;
 }
 
-void I_SetMusicVolume(int volume)
+void I_SetMusicVolume (int volume)
 {
     (void)volume;
 }
 
-int I_GetSfxLumpNum(sfxinfo_t* sfx)
+int I_GetSfxLumpNum (sfxinfo_t* sfx)
 {
     // Do we need to throw I_Error here?
     (void)sfx;
     return -1;
 }
 
-int I_StartSound(int id,
-                 int vol,
-                 int sep,
-                 int pitch,
-                 int priority)
+int I_StartSound (int id, int vol, int sep, int pitch, int priority)
 {
     (void)vol;
     (void)sep;
@@ -60,29 +60,22 @@ int I_StartSound(int id,
     return id;
 }
 
-void I_StopSound(int handle)
+void I_StopSound (int handle)
 {
     (void)handle;
 }
 
-int I_SoundIsPlaying(int handle)
+void I_StopAllSounds ()
+{
+}
+
+int I_SoundIsPlaying (int handle)
 {
     (void)handle;
     return 0;
 }
 
-void I_UpdateSound(void)
-{
-}
-
-void I_SubmitSound(void)
-{
-}
-
-void I_UpdateSoundParams(int handle,
-                         int vol,
-                         int sep,
-                         int pitch)
+void I_UpdateSoundParams (int handle, int vol, int sep, int pitch)
 {
     (void)handle;
     (void)vol;
@@ -90,62 +83,61 @@ void I_UpdateSoundParams(int handle,
     (void)pitch;
 }
 
-void I_ShutdownSound(void)
+void I_UpdateSound (void)
 {
 }
 
-void I_InitSound(void)
+void I_SubmitSound (void)
 {
 }
 
 //
 // MUSIC API.
-// This is currently an empty implementation. No sound support yet.
+// This is currently an empty implementation. No music support yet.
 //
 
-void I_InitMusic(void)
+void I_InitMusic (void)
 {
 }
 
-void I_ShutdownMusic(void)
+void I_ShutdownMusic (void)
 {
 }
 
-void I_PlaySong(int handle, int looping)
+void I_PlaySong (int handle, int looping)
 {
     (void)handle;
     (void)looping;
 }
 
-void I_PauseSong(int handle)
+void I_PauseSong (int handle)
 {
     (void)handle;
 }
 
-void I_ResumeSong(int handle)
+void I_ResumeSong (int handle)
 {
     (void)handle;
 }
 
-void I_StopSong(int handle)
+void I_StopSong (int handle)
 {
     (void)handle;
 }
 
-void I_UnRegisterSong(int handle)
+void I_UnRegisterSong (int handle)
 {
     (void)handle;
 }
 
-int I_RegisterSong(void* data)
+int I_RegisterSong (void* data)
 {
     (void)data;
     return 1;
 }
 
-int I_QrySongPlaying(int handle)
+int I_QrySongPlaying (int handle)
 {
     (void)handle;
     return 0;
 }
-

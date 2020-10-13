@@ -41,11 +41,11 @@
 //  the size of the 16bit, 2 hardware channel (stereo)
 //  mixing buffer, and the samplerate of the raw data.
 
-#define SAMPLECOUNT 2048      // Number of samples
+#define SAMPLECOUNT 4096      // Number of samples
 #define SAMPLECHANS 2         // Stereo
 #define SAMPLESIZE 4          // 16-bit stereo (4 bytes)
 #define SAMPLERATE 44100      // Hz
-#define LATENCY_MICROS 20000  // 20 ms
+#define LATENCY_MICROS 40000  // 40 ms
 
 #define MIXBUFFERSIZE (SAMPLECOUNT * SAMPLECHANS)
 #define NUM_CHANNELS 8
@@ -223,6 +223,7 @@ void I_InitSound ()
     // Initialize external data (all sounds) at start, keep static.
     fprintf (stderr, "I_InitSound: ");
 
+    // Pre-cache all sounds effects.
     for (i = 1; i < NUMSFX; i++)
     {
         // Alias? Example is the chaingun sound linked to pistol.
@@ -240,14 +241,21 @@ void I_InitSound ()
                               sizeof (sfxinfo_t)];  // Is this correct?
         }
     }
-
     fprintf (stderr, "Pre-cached all sound data.\n");
 
-    // Now initialize mixbuffer with zero.
-    for (i = 0; i < MIXBUFFERSIZE; i++)
-        s_mixbuffer[i] = 0;
+    // This table provides step widths for pitch parameters.
+    for (int i = -128; i < 128; i++)
+        s_steptable[i + 128] =
+            (int)(pow (2.0, (i / 64.0)) * (11025.0 / SAMPLERATE) * 65536.0);
 
-    // We start mixing at the beginning.
+    // Reset internal mixing channel state.
+    for (int i = 0; i < NUM_CHANNELS; i++)
+        memset (&s_channel[i], 0, sizeof (mixchannel_t));
+
+    // Now initialize mixbuffer with zero.
+    memset (&s_mixbuffer[0], 0, sizeof(s_mixbuffer));
+
+    // We start mixing at the beginning of the mixbuffer.
     s_mix_start = 0;
 
     // Start with a non-zero handle.
@@ -286,22 +294,6 @@ void I_ShutdownSound (void)
 
     // Done.
     return;
-}
-
-//
-// Initialize channels and lookup tables.
-// Move this to I_InitSound?
-//
-void I_SetChannels ()
-{
-    // Okay, reset internal mixing channels to zero.
-    for (int i = 0; i < NUM_CHANNELS; i++)
-        memset (&s_channel[i], 0, sizeof (mixchannel_t));
-
-    // This table provides step widths for pitch parameters.
-    for (int i = -128; i < 128; i++)
-        s_steptable[i + 128] =
-            (int)(pow (2.0, (i / 64.0)) * (11025.0 / SAMPLERATE) * 65536.0);
 }
 
 //
@@ -407,6 +399,15 @@ void I_StopSound (int handle)
     }
 }
 
+//
+// Stop all playing sounds.
+//
+void I_StopAllSounds ()
+{
+    for (int i = 0; i < NUM_CHANNELS; i++)
+        s_channel[i].data = NULL;
+}
+
 int I_SoundIsPlaying (int handle)
 {
     for (int i = 0; i < NUM_CHANNELS; i++)
@@ -451,19 +452,20 @@ void I_UpdateSound (void)
                 // we have added padding.
                 int s1 = (int)sample_ptr[0];
                 int s2 = (int)sample_ptr[1];
-                int sample = (((s1 << 16) + frac_pos * (s2 - s1)) >> 8) - 32768;
+                int sample = (s1 << 8) + ((frac_pos * (s2 - s1)) >> 8) - 32768;
 
                 // Add left and right part for this channel (sound) to the
                 // current data. Adjust volume accordingly.
                 dl += (channel->leftvol * sample) >> VOL_SHIFT;
                 dr += (channel->rightvol * sample) >> VOL_SHIFT;
 
-                // Fixed point (16.16 bit) arithmetic.
+                // Update the sample position using fixed point (16.16 bit)
+                // arithmetic.
                 unsigned int increment = channel->step + (unsigned int)frac_pos;
                 sample_ptr += increment >> 16;
                 channel->step_rem = increment & 65535u;
 
-                // Check whether we are done.
+                // Check whether we have reached the end of this sample.
                 if (sample_ptr >= channel->data_end)
                     sample_ptr = NULL;
 
@@ -507,6 +509,8 @@ void I_SubmitSound (void)
     // Keep mix samples that were not submitted.
     if (frames_left > 0 && frames_left < SAMPLECOUNT)
     {
+        // TODO(m): We may be able to avoid the memmove if we treat the
+        // mixbuffer as a circular FIFO.
         size_t offs = (SAMPLECOUNT - frames_left) * SAMPLECHANS;
         size_t size = frames_left * SAMPLESIZE;
         memmove (&s_mixbuffer[0], &s_mixbuffer[offs], size);

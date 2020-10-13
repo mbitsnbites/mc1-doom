@@ -38,7 +38,7 @@
 const char snd_prefixen[]
 = { 'P', 'P', 'A', 'S', 'S', 'S', 'M', 'M', 'M', 'S', 'S', 'S' };
 
-#define S_MAX_VOLUME            127
+#define S_MAX_VOLUME            15
 
 // when to clip out sounds
 // Does not fit the large outdoor areas.
@@ -52,29 +52,11 @@ const char snd_prefixen[]
 
 #define S_ATTENUATOR            ((S_CLIPPING_DIST-S_CLOSE_DIST)>>FRACBITS)
 
-// Adjustable by menu.
-#define NORM_VOLUME             snd_MaxVolume
-
 #define NORM_PITCH              128
 #define NORM_PRIORITY           64
 #define NORM_SEP                128
 
-#define S_PITCH_PERTURB         1
 #define S_STEREO_SWING          (96*0x10000)
-
-// percent attenuation from front to back
-#define S_IFRACVOL              30
-
-#define NA                      0
-#define S_NUMCHANNELS           2
-
-// Current music/sfx card - index useless
-//  w/o a reference LUT in a sound module.
-extern int snd_MusicDevice;
-extern int snd_SfxDevice;
-// Config file? Same disclaimer as above.
-extern int snd_DesiredMusicDevice;
-extern int snd_DesiredSfxDevice;
 
 typedef struct
 {
@@ -92,22 +74,19 @@ typedef struct
 // the set of channels available
 static channel_t*       channels;
 
-// These are not used, but should be (menu).
 // Maximum volume of a sound effect.
-// Internal default is max out of 0-15.
-int             snd_SfxVolume = 15;
+int                     snd_SfxVolume;
 
-// Maximum volume of music. Useless so far.
-int             snd_MusicVolume = 15;
+// Maximum volume of music.
+int                     snd_MusicVolume;
 
 // whether songs are mus_paused
 static boolean          mus_paused;
 
 // music currently being played
-static musicinfo_t*     mus_playing=0;
+static musicinfo_t*     mus_playing = NULL;
 
-// following is set
-//  by the defaults code in M_misc:
+// following is set by the defaults code in M_misc:
 // number of channels available
 int                     numChannels;
 
@@ -133,7 +112,7 @@ void S_StopChannel(int cnum);
 
 //
 // Initializes sound stuff, including volume
-// Sets channels, SFX and music volume,
+// Sets SFX and music volume,
 //  allocates channel buffer, sets S_sfx lookup.
 //
 void S_Init
@@ -142,10 +121,7 @@ void S_Init
 {
   int           i;
 
-  fprintf( stderr, "S_Init: default sfx volume %d\n", sfxVolume);
-
-  // Initialize the system sound channels.
-  I_SetChannels();
+  fprintf(stderr, "S_Init: Default sfx volume %d\n", sfxVolume);
 
   S_SetSfxVolume(sfxVolume);
   S_SetMusicVolume(musicVolume);
@@ -175,14 +151,11 @@ void S_Init
 //
 void S_Start(void)
 {
-  int cnum;
   int mnum;
 
   // kill all playing sounds at start of level
   //  (trust me - a good idea)
-  for (cnum=0 ; cnum<numChannels ; cnum++)
-    if (channels[cnum].sfxinfo)
-      S_StopChannel(cnum);
+  I_StopAllSounds ();
 
   // start new music for the level
   mus_paused = 0;
@@ -351,69 +324,7 @@ S_StartSound
 ( void*         origin,
   int           sfx_id )
 {
-#ifdef SAWDEBUG
-    // if (sfx_id == sfx_sawful)
-    // sfx_id = sfx_itemup;
-#endif
-
     S_StartSoundAtVolume(origin, sfx_id, snd_SfxVolume);
-
-    // UNUSED. We had problems, had we not?
-#ifdef SAWDEBUG
-{
-    int i;
-    int n;
-
-    static mobj_t*      last_saw_origins[10] = {1,1,1,1,1,1,1,1,1,1};
-    static int          first_saw=0;
-    static int          next_saw=0;
-
-    if (sfx_id == sfx_sawidl
-        || sfx_id == sfx_sawful
-        || sfx_id == sfx_sawhit)
-    {
-        for (i=first_saw;i!=next_saw;i=(i+1)%10)
-            if (last_saw_origins[i] != origin)
-                fprintf(stderr, "old origin 0x%lx != "
-                        "origin 0x%lx for sfx %d\n",
-                        last_saw_origins[i],
-                        origin,
-                        sfx_id);
-
-        last_saw_origins[next_saw] = origin;
-        next_saw = (next_saw + 1) % 10;
-        if (next_saw == first_saw)
-            first_saw = (first_saw + 1) % 10;
-
-        for (n=i=0; i<numChannels ; i++)
-        {
-            if (channels[i].sfxinfo == &S_sfx[sfx_sawidl]
-                || channels[i].sfxinfo == &S_sfx[sfx_sawful]
-                || channels[i].sfxinfo == &S_sfx[sfx_sawhit]) n++;
-        }
-
-        if (n>1)
-        {
-            for (i=0; i<numChannels ; i++)
-            {
-                if (channels[i].sfxinfo == &S_sfx[sfx_sawidl]
-                    || channels[i].sfxinfo == &S_sfx[sfx_sawful]
-                    || channels[i].sfxinfo == &S_sfx[sfx_sawhit])
-                {
-                    fprintf(stderr,
-                            "chn: sfxinfo=0x%lx, origin=0x%lx, "
-                            "handle=%d\n",
-                            channels[i].sfxinfo,
-                            channels[i].origin,
-                            channels[i].handle);
-                }
-            }
-            fprintf(stderr, "\n");
-        }
-    }
-}
-#endif
-
 }
 
 void S_StopSound(void *origin)
@@ -466,26 +377,6 @@ void S_UpdateSounds(void* listener_p)
     channel_t*  c;
 
     mobj_t*     listener = (mobj_t*)listener_p;
-
-    // Clean up unused data.
-    // This is currently not done for 16bit (sounds cached static).
-    // DOS 8bit remains.
-    /*if (gametic > nextcleanup)
-    {
-        for (i=1 ; i<NUMSFX ; i++)
-        {
-            if (S_sfx[i].usefulness < 1
-                && S_sfx[i].usefulness > -1)
-            {
-                if (--S_sfx[i].usefulness == -1)
-                {
-                    Z_ChangeTag(S_sfx[i].data, PU_CACHE);
-                    S_sfx[i].data = 0;
-                }
-            }
-        }
-        nextcleanup = gametic + 15;
-    }*/
 
     for (cnum=0 ; cnum<numChannels ; cnum++)
     {
@@ -542,34 +433,30 @@ void S_UpdateSounds(void* listener_p)
             }
         }
     }
+
     // kill music if it is a single-play && finished
-    // if (     mus_playing
-    //      && !I_QrySongPlaying(mus_playing->handle)
-    //      && !mus_paused )
-    // S_StopMusic();
+    if (mus_playing && !I_QrySongPlaying (mus_playing->handle) & !mus_paused)
+        S_StopMusic();
 }
 
 void S_SetMusicVolume(int volume)
 {
-    if (volume < 0 || volume > 127)
+    if (volume < 0 || volume > S_MAX_VOLUME)
     {
         I_Error("Attempt to set music volume at %d",
                 volume);
     }
 
-    I_SetMusicVolume(127);
     I_SetMusicVolume(volume);
     snd_MusicVolume = volume;
 }
 
 void S_SetSfxVolume(int volume)
 {
-
-    if (volume < 0 || volume > 127)
+    if (volume < 0 || volume > S_MAX_VOLUME)
         I_Error("Attempt to set sfx volume at %d", volume);
 
     snd_SfxVolume = volume;
-
 }
 
 //

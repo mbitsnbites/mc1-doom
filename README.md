@@ -8,9 +8,9 @@ This is the classic game DOOM (by id Software) ported to the
 
 ## Origins & License
 
-MC1-DOOM is based on the original linuxdoom code base from 1997, with some
-bugfixes and alterations to make it work on MRISC32, and of course graphics
-and I/O routines for the MC1 computer.
+MC1-DOOM is based on the original linuxdoom v1.10 code base from 1997, with
+some bugfixes and alterations to make it work on MRISC32, and of course
+graphics and I/O routines for the MC1 computer.
 
 Original [README.TXT](iddoc/README.TXT).
 
@@ -31,7 +31,11 @@ The resulting binary is in placed in `src/out-mc1/`.
 
 ## Building for Linux
 
-For testing purposes, you can also build MC1-DOOM for Linux (it requires SDL).
+For testing purposes, you can also build MC1-DOOM for Linux.
+
+To install dependencies on Ubuntu: `sudo apt install libasound2-dev libsdl1.2-dev`
+
+To build:
 
 ```bash
 $ mkdir src/out
@@ -40,3 +44,7 @@ $ cmake ..
 $ cmake --build .
 ```
 
+## Game data
+
+To run Doom you need a game WAD file. For instance the
+[shareware version of Doom 1](https://doomwiki.org/wiki/DOOM1.WAD).

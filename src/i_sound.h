@@ -39,9 +39,6 @@ void I_ShutdownSound (void);
 //  SFX I/O
 //
 
-// Initialize channels?
-void I_SetChannels ();
-
 // Get raw data lump index for sound descriptor.
 int I_GetSfxLumpNum (sfxinfo_t* sfxinfo);
 
@@ -50,6 +47,9 @@ int I_StartSound (int id, int vol, int sep, int pitch, int priority);
 
 // Stops a sound channel.
 void I_StopSound (int handle);
+
+// Stop all playing sounds.
+void I_StopAllSounds ();
 
 // Called by S_*() functions
 //  to see if a channel is still playing.
@@ -75,6 +75,9 @@ void I_ResumeSong (int handle);
 
 // Registers a song handle to song data.
 int I_RegisterSong (void* data);
+
+// Check if the song is actually playing right now.
+int I_QrySongPlaying (int handle);
 
 // Called by anything that wishes to start music.
 //  plays a song, and when the song is done,
