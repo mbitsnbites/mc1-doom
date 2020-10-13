@@ -33,7 +33,7 @@ The resulting binary is in placed in `src/out-mc1/`.
 
 For testing purposes, you can also build MC1-DOOM for Linux.
 
-To install dependencies on Ubuntu: `sudo apt install libasound2-dev libsdl1.2-dev`
+To install dependencies on Ubuntu: `sudo apt install libasound2-dev libsdl2-dev`
 
 To build:
 
