@@ -144,8 +144,10 @@ int             key_use;
 int             key_strafe;
 int             key_speed;
 
+int             enable_mouseymove;
 int             mousebfire;
 int             mousebstrafe;
+int             mousebuse;
 int             mousebforward;
 
 int             joybfire;
@@ -307,11 +309,11 @@ void G_BuildTiccmd (ticcmd_t* cmd)
     // buttons
     cmd->chatchar = HU_dequeueChatChar();
 
-    if (gamekeydown[key_fire] || mousebuttons[mousebfire]
-        || joybuttons[joybfire])
+    if (gamekeydown[key_fire] || mousebuttons[mousebfire] ||
+        joybuttons[joybfire])
         cmd->buttons |= BT_ATTACK;
 
-    if (gamekeydown[key_use] || joybuttons[joybuse] )
+    if (gamekeydown[key_use] || joybuttons[joybuse] || mousebuttons[mousebuse])
     {
         cmd->buttons |= BT_USE;
         // clear double clicks if hit use button
@@ -382,11 +384,13 @@ void G_BuildTiccmd (ticcmd_t* cmd)
         }
     }
 
-    forward += mousey;
+    // mouse-based movement
+    if (enable_mouseymove)
+        forward += mousey;
     if (strafe)
-        side += mousex*2;
+        side += mousex * 2;
     else
-        cmd->angleturn -= mousex*0x8;
+        cmd->angleturn -= mousex * 16;
 
     mousex = mousey = 0;
 

@@ -143,6 +143,10 @@ static int translatekey (SDL_Keysym* key)
             break;
 
         default:
+            // TODO(m): We should probably use SDL_SCANCODE_* for all the
+            // printable keys too, to bypass keyboard mapping, and add key->sym
+            // as a special Doom event_t field for regular keyboard input (e.g.
+            // for typing in the name of a savegame).
             rc = key->sym;
             break;
     }
@@ -154,8 +158,6 @@ static void handleevent (SDL_Event* sdlevent)
 {
     Uint8 buttonstate;
     event_t event;
-    int width;
-    int height;
 
     switch (sdlevent->type)
     {
@@ -188,9 +190,8 @@ static void handleevent (SDL_Event* sdlevent)
                           (sdlevent->motion.state & SDL_BUTTON (1) ? 1 : 0) |
                           (sdlevent->motion.state & SDL_BUTTON (2) ? 2 : 0) |
                           (sdlevent->motion.state & SDL_BUTTON (3) ? 4 : 0);
-            SDL_GetWindowSize (s_window, &width, &height);
-            event.data2 = (sdlevent->motion.xrel * width) >> 5;
-            event.data3 = -((sdlevent->motion.yrel * height) >> 5);
+            event.data2 = sdlevent->motion.xrel << 4;
+            event.data3 = -(sdlevent->motion.yrel << 4);
             D_PostEvent (&event);
             break;
 

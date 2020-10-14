@@ -170,8 +170,10 @@ extern int      key_use;
 extern int      key_strafe;
 extern int      key_speed;
 
+extern int      enable_mouseymove;
 extern int      mousebfire;
 extern int      mousebstrafe;
+extern int      mousebuse;
 extern int      mousebforward;
 
 extern int      joybfire;
@@ -209,17 +211,16 @@ typedef struct
 
 default_t defaults[] =
 {
-    {"mouse_sensitivity", &mouseSensitivity, 5, NULL, NULL, 0, 0},
     {"sfx_volume", &snd_SfxVolume, 8, NULL, NULL, 0, 0},
     {"music_volume", &snd_MusicVolume, 8, NULL, NULL, 0, 0},
     {"show_messages", &showMessages, 1, NULL, NULL, 0, 0},
 
     {"key_right", &key_right, KEY_RIGHTARROW, NULL, NULL, 0, 0},
     {"key_left", &key_left, KEY_LEFTARROW, NULL, NULL, 0, 0},
-    {"key_up", &key_up, KEY_UPARROW, NULL, NULL, 0, 0},
-    {"key_down", &key_down, KEY_DOWNARROW, NULL, NULL, 0, 0},
-    {"key_strafeleft", &key_strafeleft, ',', NULL, NULL, 0, 0},
-    {"key_straferight", &key_straferight, '.', NULL, NULL, 0, 0},
+    {"key_up", &key_up, 'w', NULL, NULL, 0, 0},
+    {"key_down", &key_down, 's', NULL, NULL, 0, 0},
+    {"key_strafeleft", &key_strafeleft, 'a', NULL, NULL, 0, 0},
+    {"key_straferight", &key_straferight, 'd', NULL, NULL, 0, 0},
 
     {"key_fire", &key_fire, KEY_RCTRL, NULL, NULL, 0, 0},
     {"key_use", &key_use, ' ', NULL, NULL, 0, 0},
@@ -227,9 +228,12 @@ default_t defaults[] =
     {"key_speed", &key_speed, KEY_RSHIFT, NULL, NULL, 0, 0},
 
     {"use_mouse", &usemouse, 1, NULL, NULL, 0, 0},
+    {"mouse_sensitivity", &mouseSensitivity, 5, NULL, NULL, 0, 0},
+    {"enable_mouseymove", &enable_mouseymove, 0, NULL, NULL, 0, 0},
     {"mouseb_fire", &mousebfire, 0, NULL, NULL, 0, 0},
     {"mouseb_strafe", &mousebstrafe, 1, NULL, NULL, 0, 0},
-    {"mouseb_forward", &mousebforward, 2, NULL, NULL, 0, 0},
+    {"mouseb_use", &mousebuse, 2, NULL, NULL, 0, 0},
+    {"mouseb_forward", &mousebforward, -1, NULL, NULL, 0, 0},
 
     {"use_joystick", &usejoystick, 0, NULL, NULL, 0, 0},
     {"joyb_fire", &joybfire, 0, NULL, NULL, 0, 0},

@@ -213,7 +213,7 @@ typedef enum
 //
 // DOOM keyboard definition.
 // This is the stuff configured by Setup.Exe.
-// Most key data are simple ascii (uppercased).
+// Most key data are simple ascii (lowercased).
 //
 #define KEY_RIGHTARROW  0xae
 #define KEY_LEFTARROW   0xac
