@@ -31,6 +31,8 @@
 #include "r_local.h"
 #include "r_sky.h"
 
+#include "st_stuff.h"
+
 // Fineangles in the SCREENWIDTH wide window.
 #define FIELDOFVIEW             2048
 
@@ -419,8 +421,8 @@ void R_InitPointToAngle (void)
 fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
 {
     fixed_t             scale;
-    int                 anglea;
-    int                 angleb;
+    angle_t             anglea;
+    angle_t             angleb;
     int                 sinea;
     int                 sineb;
     fixed_t             num;
@@ -640,10 +642,19 @@ void R_ExecuteSetViewSize (void)
         scaledviewwidth = SCREENWIDTH;
         viewheight = SCREENHEIGHT;
     }
+    else if (setblocks == 10)
+    {
+        scaledviewwidth = SCREENWIDTH;
+        viewheight = SCREENHEIGHT - ST_HEIGHT;
+    }
     else
     {
-        scaledviewwidth = setblocks*32;
-        viewheight = (setblocks*168/10)&~7;
+        scaledviewwidth = (setblocks * SCREENWIDTH) / 10;
+        viewheight = (setblocks * (SCREENHEIGHT - ST_HEIGHT)) / 10;
+
+        // Size needs to be a multiple of 8 (see R_FillBackScreen).
+        scaledviewwidth &= ~7;
+        viewheight &= ~7;
     }
 
     detailshift = setdetail;
@@ -675,8 +686,8 @@ void R_ExecuteSetViewSize (void)
     R_InitTextureMapping ();
 
     // psprite scales
-    pspritescale = FRACUNIT*viewwidth/SCREENWIDTH;
-    pspriteiscale = FRACUNIT*SCREENWIDTH/viewwidth;
+    pspritescale = (FRACUNIT * viewwidth) / BASE_WIDTH;
+    pspriteiscale = (FRACUNIT * BASE_WIDTH) / viewwidth;
 
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)

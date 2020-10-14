@@ -224,8 +224,8 @@ void I_InitGraphics (void)
         window_flags |= SDL_WINDOW_RESIZABLE;
 
     // Avoid silly small window sizes.
-    int window_w = video_w * 3;
-    int window_h = video_h * 3;
+    int window_w = 1024;
+    int window_h = (window_w * SCREENHEIGHT) / SCREENWIDTH;
 
     // Create the window.
     s_window = SDL_CreateWindow ("MC1-DOOM v1.10",

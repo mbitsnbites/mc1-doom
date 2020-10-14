@@ -475,17 +475,29 @@ void ST_Stop(void);
 
 void ST_refreshBackground(void)
 {
-
     if (st_statusbaron)
     {
-        V_DrawPatch(ST_X, 0, BG, sbar);
+        V_DrawPatch (ST_X, 0, BG, sbar);
 
         if (netgame)
             V_DrawPatch(ST_FX, 0, BG, faceback);
 
-        V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
-    }
+        int dstx = ST_XTOSCREEN (ST_X);
+        int dsty = ST_YTOSCREEN (ST_Y);
+        V_CopyRect (ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, dstx, dsty, FG);
 
+        // Pad left/right with zeros.
+        int padleft = dstx;
+        int padright = SCREENWIDTH - (dstx + ST_WIDTH);
+        if (dstx > 0)
+        {
+            V_FillRect (0, dsty, FG, padleft, ST_HEIGHT, 0);
+        }
+        if (padright > 0)
+        {
+            V_FillRect (dstx + ST_WIDTH, dsty, FG, padright, ST_HEIGHT, 0);
+        }
+    }
 }
 
 // Respond to keyboard input events,

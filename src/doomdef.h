@@ -69,31 +69,21 @@ typedef enum
 // most parameter validation debugging code will not be compiled
 #define RANGECHECK
 
-// This one switches between MIT SHM (no proper mouse)
-// and XFree86 DGA (mickey sampling). The original
-// linuxdoom used SHM, which is default.
-//#define X11_DGA               1
-
 //
 // For resize of screen, at start of game.
 // It will not work dynamically, see visplanes.
 //
 #define BASE_WIDTH              320
+#define BASE_HEIGHT             200
 
-// It is educational but futile to change this
-//  scaling e.g. to 2. Drawing of status bar,
-//  menues etc. is tied to the scale implied
-//  by the graphics.
-#define SCREEN_MUL              1
-#define INV_ASPECT_RATIO        0.625 // 0.75, ideally
-
-// Defines suck. C sucks.
-// C++ might sucks for OOP, but it sure is a better C.
-// So there.
-#define SCREENWIDTH  320
-//SCREEN_MUL*BASE_WIDTH //320
+// Actual rendering resolution.
+// TODO(m): We can't set this too high, or Doom will crash.
+#define SCREENWIDTH 356
 #define SCREENHEIGHT 200
-//(int)(SCREEN_MUL*BASE_WIDTH*INV_ASPECT_RATIO) //200
+
+// Convert 320x200 coordinates to rendering coordinates.
+#define TOSCREENX(x) (((x)*SCREENWIDTH+(BASE_WIDTH/2))/BASE_WIDTH)
+#define TOSCREENY(y) (((y)*SCREENHEIGHT+(BASE_HEIGHT/2))/BASE_HEIGHT)
 
 // The maximum number of players, multiplayer/networking.
 #define MAXPLAYERS              4

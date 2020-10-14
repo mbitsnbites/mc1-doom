@@ -451,9 +451,9 @@ WI_drawOnLnode
         bottom = top + SHORT(c[i]->height);
 
         if (left >= 0
-            && right < SCREENWIDTH
+            && right < BASE_WIDTH
             && top >= 0
-            && bottom < SCREENHEIGHT)
+            && bottom < BASE_HEIGHT)
         {
             fits = true;
         }
@@ -465,8 +465,9 @@ WI_drawOnLnode
 
     if (fits && i<2)
     {
-        V_DrawPatch(lnodes[wbs->epsd][n].x, lnodes[wbs->epsd][n].y,
-                    FB, c[i]);
+        int dstx = TOSCREENX (lnodes[wbs->epsd][n].x);
+        int dsty = TOSCREENY (lnodes[wbs->epsd][n].y);
+        V_DrawPatch (dstx, dsty, FB, c[i]);
     }
     else
     {
@@ -571,7 +572,11 @@ void WI_drawAnimatedBack(void)
         a = &anims[wbs->epsd][i];
 
         if (a->ctr >= 0)
-            V_DrawPatch(a->loc.x, a->loc.y, FB, a->p[a->ctr]);
+        {
+            int dstx = TOSCREENX (a->loc.x);
+            int dsty = TOSCREENY (a->loc.y);
+            V_DrawPatchScaled (dstx, dsty, FB, a->p[a->ctr]);
+        }
     }
 
 }
@@ -1505,7 +1510,7 @@ void WI_loadData(void)
 
     // background
     bg = (patch_t*)W_CacheLumpName (name, PU_CACHE);
-    V_DrawPatch (0, 0, 1, bg);
+    V_DrawPatchScaled (0, 0, 1, bg);
 
     // UNUSED unsigned char *pic = screens[1];
     // if (gamemode == commercial)
