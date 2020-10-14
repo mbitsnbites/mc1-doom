@@ -208,8 +208,10 @@ void I_InitGraphics (void)
     initialized = 1;
 
     // Gather video configuration.
-    boolean grabmouse = M_CheckParm ("-grabmouse") != 0;
     boolean fullscreen = M_CheckParm ("-fullscreen") != 0;
+    boolean novsync =
+        (M_CheckParm ("-novsync") != 0) || (M_CheckParm ("-timedemo") != 0);
+    boolean grabmouse = M_CheckParm ("-grabmouse") != 0;
     int video_w = SCREENWIDTH;
     int video_h = SCREENHEIGHT;
 
@@ -235,7 +237,8 @@ void I_InitGraphics (void)
         I_Error ("Couldn't create SDL window");
 
     // Create the renderer.
-    s_renderer = SDL_CreateRenderer (s_window, -1, SDL_RENDERER_PRESENTVSYNC);
+    s_renderer = SDL_CreateRenderer (
+        s_window, -1, novsync ? 0 : SDL_RENDERER_PRESENTVSYNC);
     if (s_renderer == NULL)
         I_Error ("Couldn't create SDL renderer");
     SDL_RenderSetLogicalSize (s_renderer, video_w, video_h);
