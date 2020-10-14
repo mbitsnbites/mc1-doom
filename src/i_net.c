@@ -72,7 +72,7 @@ boolean NetListen (void);
 // NETWORKING
 //
 
-int     DOOMPORT =      (IPPORT_USERRESERVED +0x1d );
+int     DOOMPORT =      5029;
 
 int                     sendsocket;
 int                     insocket;
