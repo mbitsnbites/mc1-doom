@@ -9,6 +9,9 @@ CFLAGS  = -O3 -std=c11 -W -Wall -Wextra -pedantic -DMC1
 LDFLAGS = -msim
 LIBS    = -lm
 
+# Set the resolution.
+CFLAGS += -DSCREENWIDTH=320 -DSCREENSIZE=200
+
 # Output folder.
 OUT = out-mc1
 

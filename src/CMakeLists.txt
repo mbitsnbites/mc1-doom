@@ -66,6 +66,11 @@ set(SRCS
     v_video.c
     z_zone.c)
 
+# Set resolution.
+list (APPEND DEFS
+      -DSCREENWIDTH=320
+      -DSCREENHEIGHT=200)
+
 # Enable sanitizers in debug builds.
 if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   list(APPEND SANITIZERS
