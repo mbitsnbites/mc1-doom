@@ -21,10 +21,6 @@
 #ifndef __R_DRAW__
 #define __R_DRAW__
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 extern lighttable_t*    dc_colormap;
 extern int              dc_x;
 extern int              dc_yl;

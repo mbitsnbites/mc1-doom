@@ -24,9 +24,6 @@
 #include "sounds.h"
 #include "m_fixed.h"
 
-#ifdef __GNUG__
-#pragma implementation "info.h"
-#endif
 #include "info.h"
 
 #include "p_mobj.h"

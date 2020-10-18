@@ -23,10 +23,6 @@
 
 #include "d_event.h"
 
-#ifdef __GNUG__
-#pragma interface
-#endif
-
 #define MAXWADFILES             20
 extern char*            wadfiles[MAXWADFILES];
 

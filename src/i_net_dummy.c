@@ -18,9 +18,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifdef __GNUG__
-#pragma implementation "i_net.h"
-#endif
 #include "i_net.h"
 
 void I_InitNetwork (void)
