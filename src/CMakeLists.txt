@@ -72,7 +72,7 @@ list(APPEND DEFS
      -DSCREENHEIGHT=200)
 
 # Enable sanitizers in debug builds.
-if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+if((NOT MC1) AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang"))
   list(APPEND SANITIZERS
        $<$<CONFIG:Debug>:-fsanitize=address>
        $<$<CONFIG:Debug>:-fsanitize=undefined>)
