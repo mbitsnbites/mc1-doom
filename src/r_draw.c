@@ -34,10 +34,6 @@
 // State.
 #include "doomstat.h"
 
-// ?
-#define MAXWIDTH                        1120
-#define MAXHEIGHT                       832
-
 // status bar height at bottom of screen
 #define SBARHEIGHT              32
 
@@ -56,8 +52,8 @@ int             scaledviewwidth;
 int             viewheight;
 int             viewwindowx;
 int             viewwindowy;
-byte*           ylookup[MAXHEIGHT];
-int             columnofs[MAXWIDTH];
+byte*           ylookup[SCREENHEIGHT];
+int             columnofs[SCREENWIDTH];
 
 // Color tables for different players,
 //  translate a limited part to another
