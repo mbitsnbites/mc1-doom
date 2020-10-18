@@ -67,19 +67,19 @@ set(SRCS
     z_zone.c)
 
 # Set resolution.
-list (APPEND DEFS
-      -DSCREENWIDTH=320
-      -DSCREENHEIGHT=200)
+list(APPEND DEFS
+     -DSCREENWIDTH=320
+     -DSCREENHEIGHT=200)
 
 # Enable sanitizers in debug builds.
-if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   list(APPEND SANITIZERS
        $<$<CONFIG:Debug>:-fsanitize=address>
        $<$<CONFIG:Debug>:-fsanitize=undefined>)
 endif()
 
 # More warnings.
-if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   list(APPEND OPTS
        -pedantic
        -W
@@ -87,23 +87,34 @@ if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
        -Wextra)
 endif()
 
-if (UNIX)
+if(UNIX)
   list(APPEND LIBS m)
 endif()
 
+if(MC1)
+  list(APPEND DEFS -DMC1)
+  list(APPEND SRCS mc1_syscalls.c)
+  list(APPEND LIBS -msim)
+endif()
+
 # Video.
-find_package(SDL2)
-if(SDL2_FOUND)
-  list(APPEND SRCS i_video_sdl2.c)
-  list(APPEND LIBS ${SDL2_LIBRARIES})
+if(MC1)
+  # TODO(m): Add an MC1 video implementation.
+  list(APPEND SRCS i_video_dummy.c)
 else()
-  set(CURSES_NEED_NCURSES TRUE)
-  find_package(Curses)
-  if(CURSES_FOUND)
-    list(APPEND SRCS i_video_ncurses.c)
-    list(APPEND LIBS ${CURSES_LIBRARIES})
+  find_package(SDL2)
+  if(SDL2_FOUND)
+    list(APPEND SRCS i_video_sdl2.c)
+    list(APPEND LIBS ${SDL2_LIBRARIES})
   else()
-    list(APPEND SRCS i_video_dummy.c)
+    set(CURSES_NEED_NCURSES TRUE)
+    find_package(Curses)
+    if(CURSES_FOUND)
+      list(APPEND SRCS i_video_ncurses.c)
+      list(APPEND LIBS ${CURSES_LIBRARIES})
+    else()
+      list(APPEND SRCS i_video_dummy.c)
+    endif()
   endif()
 endif()
 
@@ -117,7 +128,7 @@ else()
 endif()
 
 # Network.
-if (UNIX)
+if(UNIX)
   list(APPEND SRCS i_net.c)
 else()
   list(APPEND SRCS i_net_dummy.c)
@@ -129,3 +140,14 @@ target_compile_options(mc1doom PRIVATE ${OPTS} ${SANITIZERS})
 target_link_libraries(mc1doom PRIVATE ${LIBS} ${SANITIZERS})
 set_property(TARGET mc1doom PROPERTY C_STANDARD 11)
 set_property(TARGET mc1doom PROPERTY C_EXTENSIONS OFF)
+
+# For MC1, we add a step to convert the ELF binary to a raw binary.
+if(MC1)
+  add_custom_command(OUTPUT mc1doom.bin
+                     DEPENDS mc1doom
+                     COMMAND mrisc32-elf-objcopy ARGS -O binary mc1doom mc1doom.bin
+                     COMMENT "Generate raw binary")
+  add_custom_target(mc1doom_raw ALL
+                    DEPENDS mc1doom.bin)
+endif()	
+
