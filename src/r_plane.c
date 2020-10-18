@@ -343,6 +343,8 @@ R_MakeSpans
 // R_DrawPlanes
 // At the end of each frame.
 //
+// Note: +1/-1 out-of-bounds for pl->top/bottom is OK due to padding
+NO_SANITIZE_UNDEFINED
 void R_DrawPlanes (void)
 {
     visplane_t*         pl;

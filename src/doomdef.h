@@ -25,6 +25,15 @@
 #include <stdio.h>
 #include <string.h>
 
+// Disable sanitizers for specific functions.
+#if defined(__GNUC__) || defined(__clang__)
+#define NO_SANITIZE_ADDRESS __attribute__ ((no_sanitize_address))
+#define NO_SANITIZE_UNDEFINED __attribute__ ((no_sanitize_undefined))
+#else
+#define NO_SANITIZE_ADDRESS
+#define NO_SANITIZE_UNDEFINED
+#endif
+
 //
 // Global parameters/defines.
 //
