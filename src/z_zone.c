@@ -35,7 +35,8 @@
 //  because it will get overwritten automatically if needed.
 //
 
-#define ZONEID  0x1d4a11
+#define ZONEID    0x1d4a11
+#define ZONEGUARD 0xc001beef
 
 typedef struct
 {
@@ -50,6 +51,19 @@ typedef struct
 } memzone_t;
 
 memzone_t*      mainzone;
+
+#ifdef ZONE_DEBUG
+static void
+Z_CheckBlockIntegrity (const memblock_t* block)
+{
+    if (block->guard1 != ZONEGUARD || block->guard2 != ZONEGUARD)
+        I_Error ("Z_CheckBlockIntegrity: guards have been clobbered");
+    if (block->id != 0 && block->id != ZONEID)
+        I_Error ("Z_CheckBlockIntegrity: invalid ID %d", block->id);
+}
+#else
+#define Z_CheckBlockIntegrity(block)
+#endif
 
 //
 // Z_ClearZone
@@ -84,7 +98,13 @@ void Z_Init (void)
     int         size;
 
     mainzone = (memzone_t *)I_ZoneBase (&size);
+    if (mainzone == NULL)
+        I_Error ("Z_Init: Out of memory (tried to allocate %d bytes", size);
     mainzone->size = size;
+
+#ifdef ZONE_DEBUG
+    memset (mainzone, 0x55, size);
+#endif
 
     // set the entire zone to one free block
     mainzone->blocklist.next =
@@ -99,8 +119,11 @@ void Z_Init (void)
 
     // NULL indicates a free block.
     block->user = NULL;
-
     block->size = mainzone->size - sizeof(memzone_t);
+
+#ifdef ZONE_DEBUG
+    block->guard1 = block->guard2 = ZONEGUARD;
+#endif
 }
 
 //
@@ -112,6 +135,7 @@ void Z_Free (void* ptr)
     memblock_t*         other;
 
     block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
+    Z_CheckBlockIntegrity (block);
 
     if (block->id != ZONEID)
         I_Error ("Z_Free: freed a pointer without ZONEID");
@@ -235,10 +259,14 @@ Z_Malloc
         // there will be a free fragment after the allocated block
         newblock = (memblock_t *) ((byte *)base + size );
         newblock->size = extra;
+#ifdef ZONE_DEBUG
+        newblock->guard1 = newblock->guard2 = ZONEGUARD;
+#endif
 
         // NULL indicates free block.
         newblock->user = NULL;
         newblock->tag = 0;
+        newblock->id = 0;
         newblock->prev = base;
         newblock->next = base->next;
         newblock->next->prev = newblock;
@@ -268,6 +296,10 @@ Z_Malloc
 
     base->id = ZONEID;
 
+#ifdef ZONE_DEBUG
+    base->guard1 = base->guard2 = ZONEGUARD;
+#endif
+
     return (void *) ((byte *)base + sizeof(memblock_t));
 }
 
@@ -286,6 +318,8 @@ Z_FreeTags
          block != &mainzone->blocklist ;
          block = next)
     {
+        Z_CheckBlockIntegrity (block);
+
         // get link before freeing
         next = block->next;
 
@@ -316,6 +350,8 @@ Z_DumpHeap
 
     for (block = mainzone->blocklist.next ; ; block = block->next)
     {
+        Z_CheckBlockIntegrity (block);
+
         if (block->tag >= lowtag && block->tag <= hightag)
             printf ("block:%p    size:%7i    user:%p    tag:%3i\n",
                     (void*)block,
@@ -352,6 +388,8 @@ void Z_FileDumpHeap (FILE* f)
 
     for (block = mainzone->blocklist.next ; ; block = block->next)
     {
+        Z_CheckBlockIntegrity (block);
+
         fprintf (f,
                  "block:%p    size:%7i    user:%p    tag:%3i\n",
                  (void*)block,
@@ -385,6 +423,8 @@ void Z_CheckHeap (void)
 
     for (block = mainzone->blocklist.next ; ; block = block->next)
     {
+        Z_CheckBlockIntegrity (block);
+
         if (block->next == &mainzone->blocklist)
         {
             // all blocks have been hit
@@ -413,6 +453,7 @@ Z_ChangeTag2
     memblock_t* block;
 
     block = (memblock_t *) ( (byte *)ptr - sizeof(memblock_t));
+    Z_CheckBlockIntegrity (block);
 
     if (block->id != ZONEID)
         I_Error ("Z_ChangeTag: freed a pointer without ZONEID");
@@ -437,6 +478,8 @@ int Z_FreeMemory (void)
          block != &mainzone->blocklist;
          block = block->next)
     {
+        Z_CheckBlockIntegrity (block);
+
         if (!block->user || block->tag >= PU_PURGELEVEL)
             free += block->size;
     }

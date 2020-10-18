@@ -68,13 +68,15 @@ set(SRCS
 
 # Set resolution.
 list(APPEND DEFS
-     -DSCREENWIDTH=320
-     -DSCREENHEIGHT=200)
+     -DSCREENWIDTH=640
+     -DSCREENHEIGHT=360)
 
 # Enable sanitizers in debug builds.
 if((NOT MC1) AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang"))
   list(APPEND SANITIZERS
        $<$<CONFIG:Debug>:-fsanitize=address>
+       $<$<CONFIG:Debug>:-fsanitize=null>
+       $<$<CONFIG:Debug>:-fsanitize=pointer-overflow>
        $<$<CONFIG:Debug>:-fsanitize=undefined>)
 endif()
 

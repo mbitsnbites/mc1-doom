@@ -26,6 +26,12 @@
 
 #include <stdio.h>
 
+// Define this to add more debugging to the zone memory allocator.
+// Turned on by default in CMake debug builds.
+#ifndef NDEBUG
+#define ZONE_DEBUG
+#endif
+
 //
 // ZONE MEMORY
 // PU - purge tags.
@@ -52,12 +58,18 @@ int     Z_FreeMemory (void);
 
 typedef struct memblock_s
 {
+#ifdef ZONE_DEBUG
+    unsigned            guard1;
+#endif
     int                 size;   // including the header and possibly tiny fragments
     void**              user;   // NULL if a free block
     int                 tag;    // purgelevel
     int                 id;     // should be ZONEID
     struct memblock_s*  next;
     struct memblock_s*  prev;
+#ifdef ZONE_DEBUG
+    unsigned            guard2;
+#endif
 } memblock_t;
 
 //

@@ -338,6 +338,10 @@ void D_DoomLoop (void)
 
     while (1)
     {
+#ifdef ZONE_DEBUG
+        Z_CheckHeap ();
+#endif
+
         // frame syncronous IO operations
         I_StartFrame ();
 

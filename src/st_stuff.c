@@ -1446,5 +1446,10 @@ void ST_Init (void)
 {
     veryfirsttime = 0;
     ST_loadData();
-    screens[4] = (byte *) Z_Malloc(ST_WIDTH*ST_HEIGHT, PU_STATIC, 0);
+
+    // Note: It would seem that allocating ST_WIDTH * ST_HEIGH should be
+    // enough, but we get buffer overflows if we do. In fact, all drawing
+    // routines (e.g. V_DrawPatch) assume that the width of a screen is
+    // SCREENWIDTH - thus this screen must also be SCREENWIDTH wide.
+    screens[BG] = (byte*)Z_Malloc (SCREENWIDTH * ST_HEIGHT, PU_STATIC, 0);
 }
