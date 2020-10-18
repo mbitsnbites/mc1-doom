@@ -93,7 +93,6 @@ endif()
 
 if(MC1)
   list(APPEND DEFS -DMC1)
-  list(APPEND SRCS mc1_syscalls.c)
   list(APPEND LIBS -msim)
 endif()
 
