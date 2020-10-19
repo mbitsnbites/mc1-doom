@@ -18,10 +18,22 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <stdlib.h>
+
 #include "i_net.h"
+#include "doomstat.h"
 
 void I_InitNetwork (void)
 {
+    doomcom = (doomcom_t*) malloc (sizeof (*doomcom) );
+    memset (doomcom, 0, sizeof(*doomcom) );
+
+    // We don't support networking, so single player game it is...
+    netgame = false;
+    doomcom->id = DOOMCOM_ID;
+    doomcom->numplayers = doomcom->numnodes = 1;
+    doomcom->deathmatch = false;
+    doomcom->consoleplayer = 0;
 }
 
 void I_NetCmd (void)
