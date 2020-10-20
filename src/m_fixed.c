@@ -18,53 +18,41 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "stdlib.h"
+#include <stdlib.h>
+
+#ifdef __MRISC32__
+#include <mr32intrin.h>
+#endif
 
 #include "doomtype.h"
-#include "i_system.h"
 
 #include "m_fixed.h"
 
-// Fixme. __USE_C_FIXED__ or something.
-
-fixed_t
-FixedMul
-( fixed_t       a,
-  fixed_t       b )
-{
-    return ((long long) a * (long long) b) >> FRACBITS;
-}
-
 //
-// FixedDiv, C version.
+// FixedDiv
 //
+// Methods:
+//   1: long long (slow on most 32-bit machines)
+//   2: float (fast on MRISC32 with an FPU, but inaccurate)
+//   3: double (currently broken on MRISC32)
+//
+#define DIV_METHOD 2
 
-fixed_t
-FixedDiv
-( fixed_t       a,
-  fixed_t       b )
+fixed_t FixedDiv (fixed_t a, fixed_t b)
 {
-    if ( (abs(a)>>14) >= abs(b))
-        return (a^b)<0 ? MININT : MAXINT;
-    return FixedDiv2 (a,b);
-}
+    // Check for overflow/underflow.
+    if ((abs (a) >> 14) >= abs (b))
+        return (a ^ b) < 0 ? MININT : MAXINT;
 
-fixed_t
-FixedDiv2
-( fixed_t       a,
-  fixed_t       b )
-{
-#if 0
-    long long c;
-    c = ((long long)a<<16) / ((long long)b);
-    return (fixed_t) c;
+#if DIV_METHOD == 1
+    return (fixed_t) ((((long long)a) << 16) / ((long long)b));
+#elif DIV_METHOD == 2
+#ifdef __MRISC32_HARD_FLOAT__
+    return (fixed_t) _mr32_ftoir ((float)a / (float)b, FRACBITS);
+#else
+    return (fixed_t) ((((float)a * (float)FRACUNIT)) / (float)b);
 #endif
-
-    double c;
-
-    c = ((double)a) / ((double)b) * FRACUNIT;
-
-    if (c >= 2147483648.0 || c < -2147483648.0)
-        I_Error("FixedDiv: divide by zero");
-    return (fixed_t) c;
+#elif DIV_METHOD == 3
+    return (fixed_t) ((((double)a * (float)FRACUNIT) / (double)b));
+#endif  // DIV_METHOD == 3
 }

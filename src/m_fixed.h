@@ -29,10 +29,40 @@
 
 typedef int fixed_t;
 
-fixed_t FixedMul        (fixed_t a, fixed_t b);
-fixed_t FixedDiv        (fixed_t a, fixed_t b);
-fixed_t FixedDiv2       (fixed_t a, fixed_t b);
+//
+// FixedMul - Fixed point multiplication.
+// We inline this function for better performance.
+//
 
+static inline fixed_t FixedMul (fixed_t a, fixed_t b)
+{
+#ifdef __MRISC32_PACKED_OPS__
+    int hi, lo, result;
+    __asm__ (
+        "mulhi %[hi], %[a], %[b]\n\t"
+        "mul   %[lo], %[a], %[b]\n\t"
+        "pack  %[result], %[hi], %[lo]"
+        : [hi] "=&r"(hi),
+          [lo] "=&r"(lo),
+          [result] "=r"(result)
+        : [a] "r"(a),
+          [b] "r"(b)
+        );
+    return result;
+#else
+    return ((long long) a * (long long) b) >> FRACBITS;
+#endif
+}
+
+//
+// FixedDiv - Fixed point division.
+//
+
+fixed_t FixedDiv (fixed_t a, fixed_t b);
+
+//
+// INT_TO_FIXED - Convert an integer to fixed point.
+//
 #define INT_TO_FIXED(x) (fixed_t)(((unsigned)(fixed_t)(x)) << FRACBITS)
 
 #endif  // __M_FIXED__
