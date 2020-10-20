@@ -28,6 +28,10 @@ void I_InitNetwork (void)
     doomcom = (doomcom_t*) malloc (sizeof (*doomcom) );
     memset (doomcom, 0, sizeof(*doomcom) );
 
+    // Set network timing.
+    doomcom-> ticdup = 1;
+    doomcom-> extratics = 0;
+
     // We don't support networking, so single player game it is...
     netgame = false;
     doomcom->id = DOOMCOM_ID;
