@@ -336,6 +336,7 @@ void D_DoomLoop (void)
 
     I_InitGraphics ();
 
+    printf ("D_DoomLoop: Starting game loop...\n");
     while (1)
     {
 #ifdef ZONE_DEBUG

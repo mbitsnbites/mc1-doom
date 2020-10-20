@@ -19,14 +19,24 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "i_video.h"
+#include <stdlib.h>
 
-void I_InitGraphics(void)
+#include "doomdef.h"
+#include "i_system.h"
+#include "i_video.h"
+#include "v_video.h"
+
+void I_InitGraphics (void)
 {
+    // Allocate regular memory for the Doom screen.
+    screens[0] = (unsigned char*)malloc (SCREENWIDTH * SCREENHEIGHT);
+    if (screens[0] == NULL)
+        I_Error ("Couldn't allocate screen memory");
 }
 
-void I_ShutdownGraphics(void)
+void I_ShutdownGraphics (void)
 {
+    free (screens[0]);
 }
 
 void I_StartFrame (void)
@@ -44,21 +54,20 @@ void I_SetPalette (byte* palette)
     (void)palette;
 }
 
-void I_UpdateNoBlit(void)
+void I_UpdateNoBlit (void)
 {
 }
 
-void I_FinishUpdate(void)
+void I_FinishUpdate (void)
 {
 }
 
-void I_WaitVBL(int count)
+void I_WaitVBL (int count)
 {
     (void)count;
 }
 
-void I_ReadScreen(byte* scr)
+void I_ReadScreen (byte* scr)
 {
     (void)scr;
 }
-
