@@ -37,10 +37,11 @@ typedef int fixed_t;
 static inline fixed_t FixedMul (fixed_t a, fixed_t b)
 {
 #ifdef __MRISC32_PACKED_OPS__
-    int hi, lo, result;
+    fixed_t hi, lo, result;
     __asm__ (
-        "mulhi %[hi], %[a], %[b]\n\t"
         "mul   %[lo], %[a], %[b]\n\t"
+        "mulhi %[hi], %[a], %[b]\n\t"
+        "lsr   %[lo], %[lo], #16\n\t"
         "pack  %[result], %[hi], %[lo]"
         : [hi] "=&r"(hi),
           [lo] "=&r"(lo),
