@@ -19,13 +19,12 @@
 //
 //-----------------------------------------------------------------------------
 
+#include <ncurses.h>
+#include <stdlib.h>
+
 #include "i_video.h"
 #include "v_video.h"
 #include "doomdef.h"
-
-#include <math.h>
-#include <ncurses.h>
-#include <stdlib.h>
 
 static const char COL_TO_CHAR[] = " .-~=+cuoaqO0X8@#";
 #define NUM_CHAR_LEVELS ((sizeof (COL_TO_CHAR) / sizeof (COL_TO_CHAR[0])) - 1)
