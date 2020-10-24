@@ -34,7 +34,6 @@
 
 #include "m_swap.h"
 #include "m_argv.h"
-#include "m_port.h"
 
 #include "w_wad.h"
 
@@ -149,6 +148,63 @@ M_ReadFile
 
     *buffer = buf;
     return length;
+}
+
+int M_strcmpi (const char* s1, const char* s2)
+{
+    while (tolower (*s1) == tolower (*s2))
+    {
+        if (*s1 == 0)
+            return 0;
+        ++s1;
+        ++s2;
+    }
+    return tolower (*s2) - tolower (*s1);
+}
+
+int M_strncmpi (const char* s1, const char* s2, size_t n)
+{
+    if (n == 0)
+        return 0;
+
+    size_t i = 0;
+    while (i < (n - 1) && tolower (*s1) == tolower (*s2))
+    {
+        if (*s1 == 0)
+            return 0;
+        ++s1;
+        ++s2;
+        ++i;
+    }
+    return tolower (*s2) - tolower (*s1);
+}
+
+const char* M_GetHomeDir ()
+{
+#if defined(MC1)
+    return ".";
+#else
+    const char* home = getenv ("HOME");
+    return home ? home : ".";  // TODO(m): Try harder.
+#endif
+}
+
+const char* M_GetDoomWadDir ()
+{
+#if defined(MC1)
+    return ".";
+#else
+    const char* waddir = getenv ("DOOMWADDIR");
+    return waddir ? waddir : ".";
+#endif
+}
+
+int M_FileExists (const char* name)
+{
+    struct stat buf;
+    if (stat (name, &buf) != 0)
+        return 0;
+    return 1;
 }
 
 //
@@ -474,7 +530,7 @@ void M_ScreenShot (void)
     {
         lbmname[4] = i/10 + '0';
         lbmname[5] = i%10 + '0';
-        if (!M_fileexists (lbmname))
+        if (!M_FileExists (lbmname))
             break;      // file doesn't exist
     }
     if (i==100)

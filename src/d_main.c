@@ -44,9 +44,8 @@
 #include "f_wipe.h"
 
 #include "m_argv.h"
-#include "m_misc.h"
 #include "m_menu.h"
-#include "m_port.h"
+#include "m_misc.h"
 
 #include "i_system.h"
 #include "i_sound.h"
@@ -530,7 +529,7 @@ void IdentifyVersion (void)
     char*       tntwad;
 
     const char *home;
-    const char *doomwaddir = M_getdoomwaddir();
+    const char *doomwaddir = M_GetDoomWadDir();
 
     // Commercial.
     doom2wad = malloc(strlen(doomwaddir)+1+9+1);
@@ -560,7 +559,7 @@ void IdentifyVersion (void)
     doom2fwad = malloc(strlen(doomwaddir)+1+10+1);
     sprintf(doom2fwad, "%s/doom2f.wad", doomwaddir);
 
-    home = M_gethomedir();
+    home = M_GetHomeDir();
 
     sprintf(basedefault, "%s/.doomrc", home);
 
@@ -605,7 +604,7 @@ void IdentifyVersion (void)
         return;
     }
 
-    if ( M_fileexists (doom2fwad) )
+    if ( M_FileExists (doom2fwad) )
     {
         gamemode = commercial;
         // C'est ridicule!
@@ -616,42 +615,42 @@ void IdentifyVersion (void)
         return;
     }
 
-    if ( M_fileexists (doom2wad) )
+    if ( M_FileExists (doom2wad) )
     {
         gamemode = commercial;
         D_AddFile (doom2wad);
         return;
     }
 
-    if ( M_fileexists (plutoniawad) )
+    if ( M_FileExists (plutoniawad) )
     {
       gamemode = commercial;
       D_AddFile (plutoniawad);
       return;
     }
 
-    if ( M_fileexists (tntwad) )
+    if ( M_FileExists (tntwad) )
     {
       gamemode = commercial;
       D_AddFile (tntwad);
       return;
     }
 
-    if ( M_fileexists (doomuwad) )
+    if ( M_FileExists (doomuwad) )
     {
       gamemode = retail;
       D_AddFile (doomuwad);
       return;
     }
 
-    if ( M_fileexists (doomwad) )
+    if ( M_FileExists (doomwad) )
     {
       gamemode = registered;
       D_AddFile (doomwad);
       return;
     }
 
-    if ( M_fileexists (doom1wad) )
+    if ( M_FileExists (doom1wad) )
     {
       gamemode = shareware;
       D_AddFile (doom1wad);

@@ -26,7 +26,6 @@ set(SRCS
     m_fixed.c
     m_menu.c
     m_misc.c
-    m_port.c
     m_random.c
     m_swap.c
     p_ceilng.c

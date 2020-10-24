@@ -23,7 +23,7 @@
 #include "i_system.h"
 #include "z_zone.h"
 
-#include "m_port.h"
+#include "m_misc.h"
 #include "m_swap.h"
 
 #include "w_wad.h"

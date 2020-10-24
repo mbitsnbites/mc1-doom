@@ -20,7 +20,10 @@
 #ifndef __M_MISC__
 #define __M_MISC__
 
+#include <stddef.h>
+
 #include "doomtype.h"
+
 //
 // MISC
 //
@@ -48,5 +51,15 @@ M_DrawText
   int           y,
   boolean       direct,
   char*         string );
+
+int M_strcmpi (const char* s1, const char* s2);
+
+int M_strncmpi (const char* s1, const char* s2, size_t n);
+
+const char* M_GetHomeDir ();
+
+const char* M_GetDoomWadDir ();
+
+int M_FileExists (const char* name);
 
 #endif  // __M_MISC__

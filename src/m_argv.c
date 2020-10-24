@@ -19,7 +19,7 @@
 
 #include <string.h>
 
-#include "m_port.h"
+#include "m_misc.h"
 
 int myargc;
 char** myargv;
