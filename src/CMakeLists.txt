@@ -99,8 +99,7 @@ endif()
 
 # Video.
 if(MC1)
-  # TODO(m): Add an MC1 video implementation.
-  list(APPEND SRCS i_video_dummy.c)
+  list(APPEND SRCS i_video_mc1.c)
 else()
   find_package(SDL2)
   if(SDL2_FOUND)
