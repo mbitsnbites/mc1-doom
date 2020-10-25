@@ -20,10 +20,6 @@
 
 #include <stdlib.h>
 
-#ifdef __MRISC32__
-#include <mr32intrin.h>
-#endif
-
 #include "doomtype.h"
 
 #include "m_fixed.h"
