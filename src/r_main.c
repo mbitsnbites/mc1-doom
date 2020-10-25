@@ -68,9 +68,6 @@ fixed_t                 viewsin;
 
 player_t*               viewplayer;
 
-// 0 = high, 1 = low
-int                     detailshift;
-
 //
 // precalculated math tables
 //
@@ -104,10 +101,6 @@ lighttable_t*           zlight[LIGHTLEVELS][MAXLIGHTZ];
 int                     extralight;
 
 void (*colfunc) (void);
-void (*basecolfunc) (void);
-void (*fuzzcolfunc) (void);
-void (*transcolfunc) (void);
-void (*spanfunc) (void);
 
 //
 // R_AddPointToBox
@@ -419,7 +412,7 @@ fixed_t R_ScaleFromGlobalAngle (angle_t visangle)
     // both sines are allways positive
     sinea = finesine[anglea>>ANGLETOFINESHIFT];
     sineb = finesine[angleb>>ANGLETOFINESHIFT];
-    num = FixedMul(projection,sineb)<<detailshift;
+    num = FixedMul(projection,sineb);
     den = FixedMul(rw_distance,sinea);
 
     if (den > num>>16)
@@ -554,16 +547,13 @@ void R_InitLightTables (void)
 //
 boolean         setsizeneeded;
 int             setblocks;
-int             setdetail;
 
 void
 R_SetViewSize
-( int           blocks,
-  int           detail )
+( int           blocks )
 {
     setsizeneeded = true;
     setblocks = blocks;
-    setdetail = detail;
 }
 
 //
@@ -600,8 +590,7 @@ void R_ExecuteSetViewSize (void)
         viewheight &= ~7;
     }
 
-    detailshift = setdetail;
-    viewwidth = scaledviewwidth>>detailshift;
+    viewwidth = scaledviewwidth;
 
     centery = viewheight/2;
     centerx = viewwidth/2;
@@ -609,20 +598,7 @@ void R_ExecuteSetViewSize (void)
     centeryfrac = centery<<FRACBITS;
     projection = centerxfrac;
 
-    if (!detailshift)
-    {
-        colfunc = basecolfunc = R_DrawColumn;
-        fuzzcolfunc = R_DrawFuzzColumn;
-        transcolfunc = R_DrawTranslatedColumn;
-        spanfunc = R_DrawSpan;
-    }
-    else
-    {
-        colfunc = basecolfunc = R_DrawColumnLow;
-        fuzzcolfunc = R_DrawFuzzColumn;
-        transcolfunc = R_DrawTranslatedColumn;
-        spanfunc = R_DrawSpanLow;
-    }
+    colfunc = R_DrawColumn;
 
     R_InitBuffer (scaledviewwidth, viewheight);
 
@@ -641,7 +617,7 @@ void R_ExecuteSetViewSize (void)
     {
         dy = INT_TO_FIXED (i - viewheight / 2) + FRACUNIT / 2;
         dy = abs (dy);
-        yslope[i] = FixedDiv ( (viewwidth<<detailshift)/2*FRACUNIT, dy);
+        yslope[i] = FixedDiv (viewwidth/2*FRACUNIT, dy);
     }
 
     for (i=0 ; i<viewwidth ; i++)
@@ -657,7 +633,7 @@ void R_ExecuteSetViewSize (void)
         startmap = ((LIGHTLEVELS-1-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
         for (j=0 ; j<MAXLIGHTSCALE ; j++)
         {
-            level = startmap - j*SCREENWIDTH/(viewwidth<<detailshift)/DISTMAP;
+            level = startmap - j*SCREENWIDTH/viewwidth/DISTMAP;
 
             if (level < 0)
                 level = 0;
@@ -673,7 +649,6 @@ void R_ExecuteSetViewSize (void)
 //
 // R_Init
 //
-extern int      detailLevel;
 extern int      screenblocks;
 
 void R_Init (void)
@@ -683,10 +658,10 @@ void R_Init (void)
     R_InitPointToAngle ();
     printf ("\nR_InitPointToAngle");
     R_InitTables ();
-    // viewwidth / viewheight / detailLevel are set by the defaults
+    // viewwidth / viewheight are set by the defaults
     printf ("\nR_InitTables");
 
-    R_SetViewSize (screenblocks, detailLevel);
+    R_SetViewSize (screenblocks);
     R_InitPlanes ();
     printf ("\nR_InitPlanes");
     R_InitLightTables ();

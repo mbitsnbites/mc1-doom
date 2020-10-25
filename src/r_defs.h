@@ -258,11 +258,6 @@ typedef struct
 // column_t is a list of 0 or more post_t, (byte)-1 terminated
 typedef post_t  column_t;
 
-// PC direct to screen pointers
-//B UNUSED - keep till detailshift in r_draw.c resolved
-//extern byte*  destview;
-//extern byte*  destscreen;
-
 //
 // OTHER TYPES
 //
