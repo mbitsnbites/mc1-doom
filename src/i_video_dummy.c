@@ -69,5 +69,5 @@ void I_WaitVBL (int count)
 
 void I_ReadScreen (byte* scr)
 {
-    (void)scr;
+    memcpy (scr, screens[0], SCREENWIDTH * SCREENHEIGHT);
 }
