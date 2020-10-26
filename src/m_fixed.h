@@ -43,10 +43,7 @@ static inline fixed_t FixedMul (fixed_t a, fixed_t b)
 #if defined(__MRISC32_PACKED_OPS__)
     // TODO(m): This produces different results than the generic long long
     // solution (or so it seems).
-    fixed_t hi;
-    __asm__("mulhi %[hi], %[a], %[b]"
-            : [ hi ] "=r"(hi)
-            : [ a ] "r"(a), [ b ] "r"(b));
+    fixed_t hi = _mr32_mulhi (a, b);
     fixed_t lo = ((unsigned)(a * b)) >> 16;
     return _mr32_pack (hi, lo);
 #else
