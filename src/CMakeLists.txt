@@ -65,10 +65,9 @@ set(SRCS
     v_video.c
     z_zone.c)
 
-# Set resolution.
-list(APPEND DEFS
-     -DSCREENWIDTH=640
-     -DSCREENHEIGHT=360)
+# Default resolution.
+set(SCREENWIDTH 640)
+set(SCREENHEIGHT 360)
 
 # Enable sanitizers in debug builds.
 if((NOT MC1) AND (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang"))
@@ -95,6 +94,10 @@ endif()
 if(MC1)
   list(APPEND DEFS -DMC1)
   list(APPEND LIBS -msim)
+
+  # Resolution for MC1.
+  set(SCREENWIDTH 320)
+  set(SCREENHEIGHT 200)
 endif()
 
 # Video.
@@ -132,6 +135,11 @@ if(UNIX)
 else()
   list(APPEND SRCS i_net_dummy.c)
 endif()
+
+# Set the resolution.
+list(APPEND DEFS
+     -DSCREENWIDTH=${SCREENWIDTH}
+     -DSCREENHEIGHT=${SCREENHEIGHT})
 
 add_executable(mc1doom ${SRCS})
 target_compile_definitions(mc1doom PRIVATE ${DEFS})
