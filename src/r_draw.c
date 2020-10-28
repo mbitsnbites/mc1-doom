@@ -93,6 +93,46 @@ static void R_DrawColumnKernel (byte* dst,
                                 const fixed_t fracstep,
                                 const int count)
 {
+#if defined(__MRISC32_VECTOR_OPS__)
+    // This vectorized routine that takes <7 clock-cycles per pixel.
+    const unsigned stride = SCREENWIDTH;
+    unsigned count_left, max_vl, fracstepN, dst_incr;
+    byte* dst_ptr;
+    __asm__ volatile(
+        "    blt     %[count], 2f\n"
+        "    add     %[count_left], %[count], #1\n"
+        "    cpuid   %[max_vl], z, z\n"
+        "    mov     vl, %[max_vl]\n"
+        "    mul     %[fracstepN], %[fracstep], %[max_vl]\n"
+        "    mov     %[dst_ptr], %[dst]\n"
+        "    mul     %[dst_incr], %[max_vl], %[stride]\n"
+        "    ldea    v1, %[frac], %[fracstep]\n"
+        "1:\n"
+        "    min     vl, %[max_vl], %[count_left]\n"
+        "    sub     %[count_left], %[count_left], vl\n"
+        "    asr     v2, v1, #16\n"
+        "    and     v2, v2, #127\n"
+        "    ldub    v2, %[src], v2\n"
+        "    ldub    v2, %[colormap], v2\n"
+        "    stb     v2, %[dst_ptr], %[stride]\n"
+        "    ldea    %[dst_ptr], %[dst_ptr], %[dst_incr]\n"
+        "    add     v1, v1, %[fracstepN]\n"
+        "    bnz     %[count_left], 1b\n"
+        "2:"
+        : [count_left] "=&r"(count_left),
+          [max_vl] "=&r"(max_vl),
+          [fracstepN] "=&r"(fracstepN),
+          [dst_incr] "=&r"(dst_incr),
+          [dst_ptr] "=&r"(dst_ptr)
+        : [dst] "r"(dst),
+          [src] "r"(src),
+          [colormap] "r"(colormap),
+          [frac] "r"(frac),
+          [fracstep] "r"(fracstep),
+          [count] "r"(count),
+          [stride] "r"(stride)
+    );
+#else
     for (int i = count; i >= 0; --i)
     {
         // Current texture index. All wall textures are 128 high.
@@ -106,6 +146,7 @@ static void R_DrawColumnKernel (byte* dst,
         // Next fractional step.
         frac += fracstep;
     }
+#endif
 }
 
 //
@@ -114,6 +155,7 @@ static void R_DrawColumnKernel (byte* dst,
 
 static int R_DrawFuzzColumnKernel (byte* dst, int fuzz, const int count)
 {
+    // TODO(m): Can we vectorize this?
     const lighttable_t* colormap = &colormaps[6*256];
     for (int i = count; i >= 0; --i)
     {
@@ -141,6 +183,47 @@ static void R_DrawTranslatedColumnKernel (byte* dst,
                                           const fixed_t fracstep,
                                           const int count)
 {
+#if defined(__MRISC32_VECTOR_OPS__)
+    // This vectorized routine that takes <7 clock-cycles per pixel.
+    const unsigned stride = SCREENWIDTH;
+    unsigned count_left, max_vl, fracstepN, dst_incr;
+    byte* dst_ptr;
+    __asm__ volatile(
+        "    blt     %[count], 2f\n"
+        "    add     %[count_left], %[count], #1\n"
+        "    cpuid   %[max_vl], z, z\n"
+        "    mov     vl, %[max_vl]\n"
+        "    mul     %[fracstepN], %[fracstep], %[max_vl]\n"
+        "    mov     %[dst_ptr], %[dst]\n"
+        "    mul     %[dst_incr], %[max_vl], %[stride]\n"
+        "    ldea    v1, %[frac], %[fracstep]\n"
+        "1:\n"
+        "    min     vl, %[max_vl], %[count_left]\n"
+        "    sub     %[count_left], %[count_left], vl\n"
+        "    asr     v2, v1, #16\n"
+        "    ldub    v2, %[src], v2\n"
+        "    ldub    v2, %[translation], v2\n"
+        "    ldub    v2, %[colormap], v2\n"
+        "    stb     v2, %[dst_ptr], %[stride]\n"
+        "    ldea    %[dst_ptr], %[dst_ptr], %[dst_incr]\n"
+        "    add     v1, v1, %[fracstepN]\n"
+        "    bnz     %[count_left], 1b\n"
+        "2:"
+        : [count_left] "=&r"(count_left),
+          [max_vl] "=&r"(max_vl),
+          [fracstepN] "=&r"(fracstepN),
+          [dst_incr] "=&r"(dst_incr),
+          [dst_ptr] "=&r"(dst_ptr)
+        : [dst] "r"(dst),
+          [src] "r"(src),
+          [colormap] "r"(colormap),
+          [translation] "r"(translation),
+          [frac] "r"(frac),
+          [fracstep] "r"(fracstep),
+          [count] "r"(count),
+          [stride] "r"(stride)
+        );
+#else
     for (int i = count; i >= 0; --i)
     {
         // Current texture index. No clamping to 128 height?
@@ -156,6 +239,7 @@ static void R_DrawTranslatedColumnKernel (byte* dst,
         // Next fractional step.
         frac += fracstep;
     }
+#endif
 }
 
 //
@@ -171,6 +255,51 @@ static void R_DrawSpanKernel (byte* dst,
                               const fixed_t yfracstep,
                               const int count)
 {
+#if defined(__MRISC32_VECTOR_OPS__)
+    // This vectorized routine that takes <11 clock-cycles per pixel.
+    unsigned count_left, max_vl, xfracstepN, yfracstepN;
+    byte* dst_ptr;
+    __asm__ volatile(
+        "    blt     %[count], 2f\n"
+        "    add     %[count_left], %[count], #1\n"
+        "    cpuid   %[max_vl], z, z\n"
+        "    mov     vl, %[max_vl]\n"
+        "    mul     %[xfracstepN], %[xfracstep], %[max_vl]\n"
+        "    mul     %[yfracstepN], %[yfracstep], %[max_vl]\n"
+        "    mov     %[dst_ptr], %[dst]\n"
+        "    ldea    v1, %[xfrac], %[xfracstep]\n"
+        "    ldea    v2, %[yfrac], %[yfracstep]\n"
+        "1:\n"
+        "    min     vl, %[max_vl], %[count_left]\n"
+        "    sub     %[count_left], %[count_left], vl\n"
+        "    asr     v3, v2, #16-6\n"
+        "    and     v3, v3, #63*64\n"
+        "    asr     v4, v1, #16\n"
+        "    and     v4, v4, #63\n"
+        "    add     v3, v3, v4\n"
+        "    ldub    v3, %[src], v3\n"
+        "    ldub    v3, %[colormap], v3\n"
+        "    stb     v3, %[dst_ptr], #1\n"
+        "    ldea    %[dst_ptr], %[dst_ptr], vl\n"
+        "    add     v1, v1, %[xfracstepN]\n"
+        "    add     v2, v2, %[yfracstepN]\n"
+        "    bnz     %[count_left], 1b\n"
+        "2:"
+        : [count_left] "=&r"(count_left),
+          [max_vl] "=&r"(max_vl),
+          [xfracstepN] "=&r"(xfracstepN),
+          [yfracstepN] "=&r"(yfracstepN),
+          [dst_ptr] "=&r"(dst_ptr)
+        : [dst] "r"(dst),
+          [src] "r"(src),
+          [colormap] "r"(colormap),
+          [xfrac] "r"(xfrac),
+          [xfracstep] "r"(xfracstep),
+          [yfrac] "r"(yfrac),
+          [yfracstep] "r"(yfracstep),
+          [count] "r"(count)
+        );
+#else
     for (int i = count; i >= 0; --i)
     {
         // Current texture index in u,v. All floor textures are 64x64 in size.
@@ -183,6 +312,7 @@ static void R_DrawSpanKernel (byte* dst,
         xfrac += xfracstep;
         yfrac += yfracstep;
     }
+#endif
 }
 
 //
