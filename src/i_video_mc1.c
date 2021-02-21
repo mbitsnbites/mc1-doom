@@ -56,12 +56,14 @@ static byte* const VRAM_FB = (byte*)(VRAM_BASE + VCP_SIZE + PAL_SIZE);
 #define VIDY        36
 #define SWITCHES    40
 #define BUTTONS     44
-#define KEYCODE     48
+#define KEYPTR      48
 #define MOUSEPOS    52
 #define MOUSEBTNS   56
 // clang-format on
 
 #define GET_MMIO(reg) (*(volatile unsigned*)(&((volatile byte*)0xc0000000)[reg]))
+#define GET_KEYBUF(ptr) ((volatile unsigned*)(((volatile byte*)0xc0000080)))[ptr]
+#define KEYBUF_SIZE 16
 
 // MC1 keyboard scancodes.
 // clang-format off
@@ -192,6 +194,7 @@ static int I_MC1_TranslateKey (unsigned keycode)
     // clang-format off
     switch (keycode)
     {
+        case KB_SPACE:         return ' ';
         case KB_LEFT:          return KEY_LEFTARROW;
         case KB_RIGHT:         return KEY_RIGHTARROW;
         case KB_DOWN:          return KEY_DOWNARROW;
@@ -268,24 +271,29 @@ static int I_MC1_TranslateKey (unsigned keycode)
     // clang-format on
 }
 
+static unsigned s_keyptr;
+
 static boolean I_MC1_PollKeyEvent (event_t* event)
 {
-    static unsigned s_old_keycode;
+    unsigned keyptr, keycode;
+    int doom_key;
 
-    // Do we have a new key event?
-    unsigned keycode = GET_MMIO(KEYCODE);
-    if (keycode == s_old_keycode)
+    // Check if we have any new keycode from the keyboard.
+    keyptr = GET_MMIO(KEYPTR);
+    if (s_keyptr == keyptr)
         return false;
-    s_old_keycode = keycode;
+
+    // Get the next keycode.
+    ++s_keyptr;
+    keycode = GET_KEYBUF(s_keyptr % KEYBUF_SIZE);
 
     // Translate the MC1 keycode to a Doom keycode.
-    int doom_key = I_MC1_TranslateKey ((keycode >> 16) & 0x1ff);
-    if (doom_key == 0)
-        return false;
-
-    // Create a Doom keyboard event.
-    event->type = (keycode & 0x80000000) ? ev_keyup : ev_keydown;
-    event->data1 = doom_key;
+    doom_key = I_MC1_TranslateKey (keycode & 0x1ff);
+    if (doom_key != 0) {
+        // Create a Doom keyboard event.
+        event->type = (keycode & 0x80000000) ? ev_keydown : ev_keyup;
+        event->data1 = doom_key;
+    }
 
     return true;
 }
@@ -326,6 +334,8 @@ void I_InitGraphics (void)
         I_Error ("Couldn't allocate screen memory");
 
     I_MC1_CreateVCP (VRAM_VCP);
+
+    s_keyptr = GET_MMIO(KEYPTR);
 
     printf (
         "I_InitGraphics: Framebuffer @ 0x%08x (%d)\n"
