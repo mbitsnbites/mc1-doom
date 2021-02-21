@@ -261,13 +261,51 @@ static inline void V_DrawPatchScaledInternal (int x,
         {
             const byte* src = (byte*)post + 3;
             byte* dst = desttop + TOSCREENY ((int)post->topdelta) * SCREENWIDTH;
+            int count = TOSCREENY ((int)post->length);
+#if defined(__MRISC32_VECTOR_OPS__)
+            // This vectorized routine takes <5 clock-cycles per pixel.
+            const unsigned stride = SCREENWIDTH;
+            unsigned count_left, max_vl, step_y_N, dst_incr;
+            byte* dst_ptr;
+            __asm__ volatile(
+                "    ble     %[count], 2f\n"
+                "    cpuid   %[max_vl], z, z\n"
+                "    mov     vl, %[max_vl]\n"
+                "    mov     %[count_left], %[count]\n"
+                "    mov     %[dst_ptr], %[dst]\n"
+                "    mul     %[step_y_N], %[max_vl], %[step_y]\n"
+                "    mul     %[dst_incr], %[max_vl], %[stride]\n"
+                "    ldea    v1, z, %[step_y]\n"
+                "1:\n"
+                "    min     vl, %[max_vl], %[count_left]\n"
+                "    sub     %[count_left], %[count_left], vl\n"
+                "    asr     v2, v1, #16\n"
+                "    ldub    v2, %[src], v2\n"
+                "    stb     v2, %[dst_ptr], %[stride]\n"
+                "    ldea    %[dst_ptr], %[dst_ptr], %[dst_incr]\n"
+                "    add     v1, v1, %[step_y_N]\n"
+                "    bnz     %[count_left], 1b\n"
+                "2:"
+                : [count_left] "=&r"(count_left),
+                  [max_vl] "=&r"(max_vl),
+                  [step_y_N] "=&r"(step_y_N),
+                  [dst_incr] "=&r"(dst_incr),
+                  [dst_ptr] "=&r"(dst_ptr)
+                : [dst] "r"(dst),
+                  [src] "r"(src),
+                  [count] "r"(count),
+                  [step_y] "r"(step_y),
+                  [stride] "r"(stride)
+                );
+#else
             fixed_t row_fixed = 0;
-            for (int v = 0; v < TOSCREENY ((int)post->length);
-                 ++v, row_fixed += step_y)
+            for (int v = 0; v < count; ++v)
             {
                 *dst = src[row_fixed >> 16];
                 dst += SCREENWIDTH;
+                row_fixed += step_y;
             }
+#endif
             post = (post_t*)((byte*)post + post->length + 4);
         }
     }
@@ -312,11 +350,45 @@ static void V_DrawPatchInternal (int x,
         {
             const byte* src = (byte*)column + 3;
             byte* dst = desttop + column->topdelta * SCREENWIDTH;
-            for (int v = 0; v < column->length; ++v)
+            int count = column->length;
+#if defined(__MRISC32_VECTOR_OPS__)
+            // This vectorized routine takes <3 clock-cycles per pixel.
+            const unsigned stride = SCREENWIDTH;
+            unsigned count_left, max_vl, dst_incr;
+            byte* src_ptr, dst_ptr;
+            __asm__ volatile(
+                "    ble     %[count], 2f\n"
+                "    cpuid   %[max_vl], z, z\n"
+                "    mov     %[count_left], %[count]\n"
+                "    mov     %[src_ptr], %[src]\n"
+                "    mov     %[dst_ptr], %[dst]\n"
+                "    mul     %[dst_incr], %[max_vl], %[stride]\n"
+                "1:\n"
+                "    min     vl, %[max_vl], %[count_left]\n"
+                "    sub     %[count_left], %[count_left], vl\n"
+                "    ldub    v1, %[src_ptr], #1\n"
+                "    stb     v1, %[dst_ptr], %[stride]\n"
+                "    ldea    %[src_ptr], %[src_ptr], vl\n"
+                "    ldea    %[dst_ptr], %[dst_ptr], %[dst_incr]\n"
+                "    bnz     %[count_left], 1b\n"
+                "2:"
+                : [count_left] "=&r"(count_left),
+                  [max_vl] "=&r"(max_vl),
+                  [dst_incr] "=&r"(dst_incr),
+                  [src_ptr] "=&r"(src_ptr),
+                  [dst_ptr] "=&r"(dst_ptr)
+                : [dst] "r"(dst),
+                  [src] "r"(src),
+                  [count] "r"(count),
+                  [stride] "r"(stride)
+                );
+#else
+            for (int v = 0; v < count; ++v)
             {
                 *dst = *src++;
                 dst += SCREENWIDTH;
             }
+#endif
             column = (column_t*)((byte*)column + column->length + 4);
         }
     }
