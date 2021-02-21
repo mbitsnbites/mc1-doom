@@ -94,7 +94,7 @@ static void R_DrawColumnKernel (byte* dst,
                                 const int count)
 {
 #if defined(__MRISC32_VECTOR_OPS__)
-    // This vectorized routine that takes <7 clock-cycles per pixel.
+    // This vectorized routine takes <7 clock-cycles per pixel.
     const unsigned stride = SCREENWIDTH;
     unsigned count_left, max_vl, fracstepN, dst_incr;
     byte* dst_ptr;
@@ -103,8 +103,8 @@ static void R_DrawColumnKernel (byte* dst,
         "    add     %[count_left], %[count], #1\n"
         "    cpuid   %[max_vl], z, z\n"
         "    mov     vl, %[max_vl]\n"
-        "    mul     %[fracstepN], %[fracstep], %[max_vl]\n"
         "    mov     %[dst_ptr], %[dst]\n"
+        "    mul     %[fracstepN], %[max_vl], %[fracstep]\n"
         "    mul     %[dst_incr], %[max_vl], %[stride]\n"
         "    ldea    v1, %[frac], %[fracstep]\n"
         "1:\n"
@@ -184,7 +184,7 @@ static void R_DrawTranslatedColumnKernel (byte* dst,
                                           const int count)
 {
 #if defined(__MRISC32_VECTOR_OPS__)
-    // This vectorized routine that takes <7 clock-cycles per pixel.
+    // This vectorized routine takes <7 clock-cycles per pixel.
     const unsigned stride = SCREENWIDTH;
     unsigned count_left, max_vl, fracstepN, dst_incr;
     byte* dst_ptr;
@@ -193,8 +193,8 @@ static void R_DrawTranslatedColumnKernel (byte* dst,
         "    add     %[count_left], %[count], #1\n"
         "    cpuid   %[max_vl], z, z\n"
         "    mov     vl, %[max_vl]\n"
-        "    mul     %[fracstepN], %[fracstep], %[max_vl]\n"
         "    mov     %[dst_ptr], %[dst]\n"
+        "    mul     %[fracstepN], %[max_vl], %[fracstep]\n"
         "    mul     %[dst_incr], %[max_vl], %[stride]\n"
         "    ldea    v1, %[frac], %[fracstep]\n"
         "1:\n"
@@ -256,7 +256,7 @@ static void R_DrawSpanKernel (byte* dst,
                               const int count)
 {
 #if defined(__MRISC32_VECTOR_OPS__)
-    // This vectorized routine that takes <11 clock-cycles per pixel.
+    // This vectorized routine takes <11 clock-cycles per pixel.
     unsigned count_left, max_vl, xfracstepN, yfracstepN;
     byte* dst_ptr;
     __asm__ volatile(
@@ -264,9 +264,9 @@ static void R_DrawSpanKernel (byte* dst,
         "    add     %[count_left], %[count], #1\n"
         "    cpuid   %[max_vl], z, z\n"
         "    mov     vl, %[max_vl]\n"
-        "    mul     %[xfracstepN], %[xfracstep], %[max_vl]\n"
-        "    mul     %[yfracstepN], %[yfracstep], %[max_vl]\n"
         "    mov     %[dst_ptr], %[dst]\n"
+        "    mul     %[xfracstepN], %[max_vl], %[xfracstep]\n"
+        "    mul     %[yfracstepN], %[max_vl], %[yfracstep]\n"
         "    ldea    v1, %[xfrac], %[xfracstep]\n"
         "    ldea    v2, %[yfrac], %[yfracstep]\n"
         "1:\n"
