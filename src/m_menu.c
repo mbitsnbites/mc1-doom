@@ -487,8 +487,14 @@ menu_t  SaveDef =
 //
 static inline void M_DrawPatchInternal (int x, int y, int scrn, patch_t* patch)
 {
+    // Re-center the menu relative to the original 320x200 coordinate system.
     x = x - (BASE_WIDTH/2) + (SCREENWIDTH/2);
     y = y - (BASE_HEIGHT/2) + (SCREENHEIGHT/2);
+
+    // Hack: Make the main menu fit on resolutions smaller than 320x200.
+    if (SCREENHEIGHT < BASE_HEIGHT)
+        y += (BASE_HEIGHT - SCREENHEIGHT) / 2;
+
     V_DrawPatchDirect (x, y, scrn, patch);
 }
 

@@ -30,158 +30,62 @@
 #include "i_system.h"
 #include "i_video.h"
 #include "v_video.h"
+#include "mc1.h"
 
-// We assume that the Doom binary is loaded into XRAM (0x80000000...), or
-// into the "ROM" (0x00000000...) for the simulator, and that it has complete
-// ownership of VRAM (0x40000000...). Hence we just hard-code the video
-// addresses.
-#define VRAM_BASE 0x40000100
-#define VCP_SIZE (4*(16+SCREENHEIGHT*2))
-#define PAL_SIZE (4*(256+1))
-static byte* const VRAM_VCP = (byte*)VRAM_BASE;
-static byte* const VRAM_PAL = (byte*)(VRAM_BASE + VCP_SIZE);
-static byte* const VRAM_FB = (byte*)(VRAM_BASE + VCP_SIZE + PAL_SIZE);
+// Video buffers.
+static byte* s_vcp;
+static byte* s_palette;
+static byte* s_framebuffer;
 
-// MC1 MMIO.
-// clang-format off
-#define CLKCNTLO    0
-#define CLKCNTHI    4
-#define CPUCLK      8
-#define VRAMSIZE    12
-#define XRAMSIZE    16
-#define VIDWIDTH    20
-#define VIDHEIGHT   24
-#define VIDFPS      28
-#define VIDFRAMENO  32
-#define VIDY        36
-#define SWITCHES    40
-#define BUTTONS     44
-#define KEYPTR      48
-#define MOUSEPOS    52
-#define MOUSEBTNS   56
-// clang-format on
+// Pointers for the custom VRAM allocator.
+static byte* s_vram_alloc_ptr;
+static byte* s_vram_alloc_end;
 
-#define GET_MMIO(reg) (*(volatile unsigned*)(&((volatile byte*)0xc0000000)[reg]))
-#define GET_KEYBUF(ptr) ((volatile unsigned*)(((volatile byte*)0xc0000080)))[ptr]
-#define KEYBUF_SIZE 16
+static void MC1_AllocInit (void)
+{
+    // We assume that the Doom binary is loaded into XRAM (0x80000000...), or
+    // into the "ROM" (0x00000000...) for the simulator, and that it has
+    // complete ownership of VRAM (0x40000000...).
+    s_vram_alloc_ptr = (byte*)0x40000100;
+    s_vram_alloc_end = (byte*)(0x40000000 + GET_MMIO (VRAMSIZE));
+}
 
-// MC1 keyboard scancodes.
-// clang-format off
-#define KB_A                0x01c
-#define KB_B                0x032
-#define KB_C                0x021
-#define KB_D                0x023
-#define KB_E                0x024
-#define KB_F                0x02b
-#define KB_G                0x034
-#define KB_H                0x033
-#define KB_I                0x043
-#define KB_J                0x03b
-#define KB_K                0x042
-#define KB_L                0x04b
-#define KB_M                0x03a
-#define KB_N                0x031
-#define KB_O                0x044
-#define KB_P                0x04d
-#define KB_Q                0x015
-#define KB_R                0x02d
-#define KB_S                0x01b
-#define KB_T                0x02c
-#define KB_U                0x03c
-#define KB_V                0x02a
-#define KB_W                0x01d
-#define KB_X                0x022
-#define KB_Y                0x035
-#define KB_Z                0x01a
-#define KB_0                0x045
-#define KB_1                0x016
-#define KB_2                0x01e
-#define KB_3                0x026
-#define KB_4                0x025
-#define KB_5                0x02e
-#define KB_6                0x036
-#define KB_7                0x03d
-#define KB_8                0x03e
-#define KB_9                0x046
+static byte* MC1_VRAM_Alloc (const size_t bytes)
+{
+    // Check if there is enough room.
+    byte* ptr = s_vram_alloc_ptr;
+    byte* new_ptr = ptr + bytes;
+    if (new_ptr > s_vram_alloc_end)
+        return NULL;
 
-#define KB_SPACE            0x029
-#define KB_BACKSPACE        0x066
-#define KB_TAB              0x00d
-#define KB_LSHIFT           0x012
-#define KB_LCTRL            0x014
-#define KB_LALT             0x011
-#define KB_LMETA            0x11f
-#define KB_RSHIFT           0x059
-#define KB_RCTRL            0x114
-#define KB_RALT             0x111
-#define KB_RMETA            0x127
-#define KB_ENTER            0x05a
-#define KB_ESC              0x076
-#define KB_F1               0x005
-#define KB_F2               0x006
-#define KB_F3               0x004
-#define KB_F4               0x00c
-#define KB_F5               0x003
-#define KB_F6               0x00b
-#define KB_F7               0x083
-#define KB_F8               0x00a
-#define KB_F9               0x001
-#define KB_F10              0x009
-#define KB_F11              0x078
-#define KB_F12              0x007
+    // Align the next allocation slot to a 32 byte boundary.
+    if ((((size_t)new_ptr) & 31) != 0)
+        new_ptr += 32U - (((size_t)new_ptr) & 31);
+    s_vram_alloc_ptr = new_ptr;
 
-#define KB_INSERT           0x170
-#define KB_HOME             0x16c
-#define KB_DEL              0x171
-#define KB_END              0x169
-#define KB_PGUP             0x17d
-#define KB_PGDN             0x17a
-#define KB_UP               0x175
-#define KB_LEFT             0x16b
-#define KB_DOWN             0x172
-#define KB_RIGHT            0x174
+    return ptr;
+}
 
-#define KB_KP_0             0x070
-#define KB_KP_1             0x069
-#define KB_KP_2             0x072
-#define KB_KP_3             0x07a
-#define KB_KP_4             0x06b
-#define KB_KP_5             0x073
-#define KB_KP_6             0x074
-#define KB_KP_7             0x06c
-#define KB_KP_8             0x075
-#define KB_KP_9             0x07d
-#define KB_KP_PERIOD        0x071
-#define KB_KP_PLUS          0x079
-#define KB_KP_MINUS         0x07b
-#define KB_KP_MUL           0x07c
-#define KB_KP_DIV           0x06d
-#define KB_KP_ENTER         0x06e
+static byte* MC1_Alloc (const size_t bytes)
+{
+    // Prefer VRAM (for speed).
+    byte* ptr = MC1_VRAM_Alloc (bytes);
+    if (ptr == NULL)
+        ptr = (byte*)malloc (bytes);
+    return ptr;
+}
 
-#define KB_ACPI_POWER       0x137
-#define KB_ACPI_SLEEP       0x13f
-#define KB_ACPI_WAKE        0x15e
+static int MC1_IsVRAMPtr (const byte* ptr)
+{
+    return ptr >= (byte*)0x40000000 && ptr < (byte*)0x80000000;
+}
 
-#define KB_MM_NEXT_TRACK    0x14d
-#define KB_MM_PREV_TRACK    0x115
-#define KB_MM_STOP          0x13b
-#define KB_MM_PLAY_PAUSE    0x134
-#define KB_MM_MUTE          0x123
-#define KB_MM_VOL_UP        0x132
-#define KB_MM_VOL_DOWN      0x121
-#define KB_MM_MEDIA_SEL     0x150
-#define KB_MM_EMAIL         0x148
-#define KB_MM_CALCULATOR    0x12b
-#define KB_MM_MY_COMPUTER   0x140
-
-#define KB_WWW_SEARCH       0x110
-#define KB_WWW_HOME         0x13a
-#define KB_WWW_BACK         0x138
-#define KB_WWW_FOWRARD      0x130
-#define KB_WWW_STOP         0x128
-#define KB_WWW_REFRESH      0x120
-#define KB_WWW_FAVORITES    0x118
-// clang-format on
+static void MC1_Free (byte* ptr)
+{
+    // We can't free VRAM pointers.
+    if (!MC1_IsVRAMPtr (ptr))
+        free (ptr);
+}
 
 static void I_MC1_CreateVCP (byte* vcp)
 {
@@ -279,17 +183,18 @@ static boolean I_MC1_PollKeyEvent (event_t* event)
     int doom_key;
 
     // Check if we have any new keycode from the keyboard.
-    keyptr = GET_MMIO(KEYPTR);
+    keyptr = GET_MMIO (KEYPTR);
     if (s_keyptr == keyptr)
         return false;
 
     // Get the next keycode.
     ++s_keyptr;
-    keycode = GET_KEYBUF(s_keyptr % KEYBUF_SIZE);
+    keycode = GET_KEYBUF (s_keyptr % KEYBUF_SIZE);
 
     // Translate the MC1 keycode to a Doom keycode.
     doom_key = I_MC1_TranslateKey (keycode & 0x1ff);
-    if (doom_key != 0) {
+    if (doom_key != 0)
+    {
         // Create a Doom keyboard event.
         event->type = (keycode & 0x80000000) ? ev_keydown : ev_keyup;
         event->data1 = doom_key;
@@ -304,8 +209,8 @@ static boolean I_MC1_PollMouseEvent (event_t* event)
     static unsigned s_old_mousebtns;
 
     // Do we have a new mouse movement event?
-    unsigned mousepos = GET_MMIO(MOUSEPOS);
-    unsigned mousebtns = GET_MMIO(MOUSEBTNS);
+    unsigned mousepos = GET_MMIO (MOUSEPOS);
+    unsigned mousebtns = GET_MMIO (MOUSEBTNS);
     if (mousepos == s_old_mousepos && mousebtns == s_old_mousebtns)
         return false;
 
@@ -327,28 +232,43 @@ static boolean I_MC1_PollMouseEvent (event_t* event)
 
 void I_InitGraphics (void)
 {
+    MC1_AllocInit ();
+
+    // Video buffers that need to be in VRAM.
+    const size_t vcp_size = (16 + SCREENHEIGHT * 2) * sizeof (unsigned);
+    const size_t palette_size = (256 + 1) * sizeof (unsigned);
+    const size_t framebuffer_size = SCREENWIDTH * SCREENHEIGHT * sizeof (byte);
+    s_vcp = MC1_VRAM_Alloc (vcp_size);
+    s_palette = MC1_VRAM_Alloc (palette_size);
+    s_framebuffer = MC1_VRAM_Alloc (framebuffer_size);
+    if (s_framebuffer == NULL)
+        I_Error ("Error: Not enough VRAM!");
+
     // Allocate regular memory for the Doom screen.
-    // TODO(m): We should use VRAM if there's enough room, as it's faster.
-    screens[0] = (unsigned char*)malloc (SCREENWIDTH * SCREENHEIGHT);
-    if (screens[0] == NULL)
-        I_Error ("Couldn't allocate screen memory");
+    const size_t screen_size = SCREENWIDTH * SCREENHEIGHT * sizeof (byte);
+    screens[0] = MC1_Alloc (screen_size);
+    if (MC1_IsVRAMPtr (screens[0]))
+        printf ("I_InitGraphics: Using VRAM for the pixel buffer\n");
 
-    I_MC1_CreateVCP (VRAM_VCP);
+    I_MC1_CreateVCP (s_vcp);
 
-    s_keyptr = GET_MMIO(KEYPTR);
+    s_keyptr = GET_MMIO (KEYPTR);
 
     printf (
-        "I_InitGraphics: Framebuffer @ 0x%08x (%d)\n"
+        "I_InitGraphics: Resolution = %d x %d\n"
+        "                Framebuffer @ 0x%08x (%d)\n"
         "                Palette     @ 0x%08x (%d)\n",
-        (unsigned)VRAM_FB,
-        (unsigned)VRAM_FB,
-        (unsigned)VRAM_PAL,
-        (unsigned)VRAM_PAL);
+        SCREENWIDTH,
+        SCREENHEIGHT,
+        (unsigned)s_framebuffer,
+        (unsigned)s_framebuffer,
+        (unsigned)s_palette,
+        (unsigned)s_palette);
 }
 
 void I_ShutdownGraphics (void)
 {
-    free (screens[0]);
+    MC1_Free (screens[0]);
 }
 
 void I_StartFrame (void)
@@ -369,7 +289,7 @@ void I_StartTic (void)
 
 void I_SetPalette (byte* palette)
 {
-    unsigned* dst = (unsigned*)VRAM_PAL;
+    unsigned* dst = (unsigned*)s_palette;
     const unsigned a = 255;
     for (int i = 0; i < 256; ++i)
     {
@@ -390,19 +310,12 @@ void I_UpdateNoBlit (void)
 
 void I_FinishUpdate (void)
 {
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#pragma GCC diagnostic ignored "-Wstringop-overflow"
-#endif
-    memcpy (VRAM_FB, screens[0], SCREENWIDTH * SCREENHEIGHT);
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+    memcpy (s_framebuffer, screens[0], SCREENWIDTH * SCREENHEIGHT);
 }
 
 void I_WaitVBL (int count)
 {
+#if 0
     // TODO(m): Replace this with MC1 MMIO-based timing.
     struct timeval t0, t;
     long dt, waitt;
@@ -415,6 +328,10 @@ void I_WaitVBL (int count)
         gettimeofday (&t, NULL);
         dt = (t.tv_sec - t0.tv_sec) * 1000000L + (t.tv_usec - t0.tv_usec);
     } while (dt < waitt);
+#else
+    // Run at max FPS - no wait.
+    (void)count;
+#endif
 }
 
 void I_ReadScreen (byte* scr)

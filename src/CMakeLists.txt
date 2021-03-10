@@ -97,7 +97,7 @@ if(MC1)
 
   # Resolution for MC1.
   set(SCREENWIDTH 320)
-  set(SCREENHEIGHT 200)
+  set(SCREENHEIGHT 180)
 endif()
 
 # Video.
