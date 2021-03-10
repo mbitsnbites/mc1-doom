@@ -13,10 +13,6 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
-// DESCRIPTION:
-//  Internally used data structures for virtually everything,
-//   key definitions, lots of other stuff.
-//
 //-----------------------------------------------------------------------------
 
 // mc1.h -- System defines for MC1
@@ -166,5 +162,35 @@
 #define KB_WWW_REFRESH      0x120
 #define KB_WWW_FAVORITES    0x118
 // clang-format on
+
+// Macros for creating VCP commands.
+// clang-format off
+#define VCP_TOVCPADDR(addr)      ((((unsigned)(addr)) - 0x40000000) >> 2)
+#define VCP_JMP(addr)            (0x00000000 | VCP_TOVCPADDR (addr))
+#define VCP_JSR(addr)            (0x10000000 | VCP_TOVCPADDR (addr))
+#define VCP_RTS                   0x20000000
+#define VCP_NOP                   0x30000000
+#define VCP_WAITX(x)             (0x40000000 | ((x) & 0xffff))
+#define VCP_WAITY(y)             (0x50000000 | ((y) & 0xffff))
+#define VCP_SETPAL(first, count) (0x60000000 | ((first) << 8) | ((count) - 1))
+#define VCP_SETREG(reg, value)   (0x80000000 | ((reg) << 24) | (value))
+// clang-format on
+
+// Video registers.
+#define VCR_ADDR  0
+#define VCR_XOFFS 1
+#define VCR_XINCR 2
+#define VCR_HSTRT 3
+#define VCR_HSTOP 4
+#define VCR_CMODE 5
+#define VCR_RMODE 6
+
+// Color modes for the CMODE register.
+#define CMODE_RGBA8888 0
+#define CMODE_RGBA5551 1
+#define CMODE_PAL8 2
+#define CMODE_PAL4 3
+#define CMODE_PAL2 4
+#define CMODE_PAL1 5
 
 #endif // MC1_H

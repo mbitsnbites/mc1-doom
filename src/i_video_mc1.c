@@ -87,10 +87,47 @@ static void MC1_Free (byte* ptr)
         free (ptr);
 }
 
-static void I_MC1_CreateVCP (byte* vcp)
+static void I_MC1_CreateVCP (void)
 {
-    // TODO(m): Implement me!
-    (void)vcp;
+    // Get the native video signal resolution and calculate the scaling factors.
+    unsigned native_width = GET_MMIO (VIDWIDTH);
+    unsigned native_height = GET_MMIO (VIDHEIGHT);
+    unsigned xincr = ((native_width - 1) << 16) / (SCREENWIDTH - 1);
+    unsigned yincr = ((native_height - 1) << 16) / (SCREENHEIGHT - 1);
+
+    // Frame configuraiton.
+    unsigned* vcp = (unsigned*)s_vcp;
+    *vcp++ = VCP_SETREG (VCR_XINCR, xincr);
+    *vcp++ = VCP_SETREG (VCR_CMODE, CMODE_PAL8);
+    *vcp++ = VCP_JSR (s_palette);
+
+    // Generate lines.
+    unsigned y = 0;
+    unsigned addr = (unsigned)s_framebuffer;
+    for (int i = 0; i < SCREENHEIGHT; ++i)
+    {
+        if (i == 0)
+            *vcp++ = VCP_SETREG (VCR_HSTOP, native_width);
+        *vcp++ = VCP_WAITY (y >> 16);
+        *vcp++ = VCP_SETREG (VCR_ADDR, VCP_TOVCPADDR (addr));
+        addr += SCREENWIDTH;
+        y += yincr;
+    }
+
+    // End of frame (wait forever).
+    *vcp = VCP_WAITY (32767);
+
+    // Palette.
+    unsigned* palette = (unsigned*)s_palette;
+    *palette++ = VCP_SETPAL (0, 256);
+    palette += 256;
+    *palette = VCP_RTS;
+
+    // Configure the main layer 1 VCP to call our VCP.
+    *((unsigned*)0x40000008) = VCP_JMP (s_vcp);
+
+    // The layer 2 VCP should do nothing.
+    *((unsigned*)0x40000010) = VCP_WAITY (32767);
 }
 
 static int I_MC1_TranslateKey (unsigned keycode)
@@ -235,8 +272,8 @@ void I_InitGraphics (void)
     MC1_AllocInit ();
 
     // Video buffers that need to be in VRAM.
-    const size_t vcp_size = (16 + SCREENHEIGHT * 2) * sizeof (unsigned);
-    const size_t palette_size = (256 + 1) * sizeof (unsigned);
+    const size_t vcp_size = (5 + SCREENHEIGHT * 2) * sizeof (unsigned);
+    const size_t palette_size = (2 + 256) * sizeof (unsigned);
     const size_t framebuffer_size = SCREENWIDTH * SCREENHEIGHT * sizeof (byte);
     s_vcp = MC1_VRAM_Alloc (vcp_size);
     s_palette = MC1_VRAM_Alloc (palette_size);
@@ -250,7 +287,7 @@ void I_InitGraphics (void)
     if (MC1_IsVRAMPtr (screens[0]))
         printf ("I_InitGraphics: Using VRAM for the pixel buffer\n");
 
-    I_MC1_CreateVCP (s_vcp);
+    I_MC1_CreateVCP ();
 
     s_keyptr = GET_MMIO (KEYPTR);
 
@@ -262,8 +299,8 @@ void I_InitGraphics (void)
         SCREENHEIGHT,
         (unsigned)s_framebuffer,
         (unsigned)s_framebuffer,
-        (unsigned)s_palette,
-        (unsigned)s_palette);
+        (unsigned)(s_palette + 4),
+        (unsigned)(s_palette + 4));
 }
 
 void I_ShutdownGraphics (void)
@@ -289,7 +326,7 @@ void I_StartTic (void)
 
 void I_SetPalette (byte* palette)
 {
-    unsigned* dst = (unsigned*)s_palette;
+    unsigned* dst = &((unsigned*)s_palette)[1];
     const unsigned a = 255;
     for (int i = 0; i < 256; ++i)
     {
