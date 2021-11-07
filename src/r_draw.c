@@ -101,7 +101,7 @@ static void R_DrawColumnKernel (byte* dst,
     __asm__ volatile(
         "    blt     %[count], 2f\n"
         "    add     %[count_left], %[count], #1\n"
-        "    cpuid   vl, z, z\n"
+        "    getsr   vl, #0x10\n"
         "    mov     %[dst_ptr], %[dst]\n"
         "    mul     %[fracstepN], vl, %[fracstep]\n"
         "    mul     %[dst_incr], vl, %[stride]\n"
@@ -189,7 +189,7 @@ static void R_DrawTranslatedColumnKernel (byte* dst,
     __asm__ volatile(
         "    blt     %[count], 2f\n"
         "    add     %[count_left], %[count], #1\n"
-        "    cpuid   vl, z, z\n"
+        "    getsr   vl, #0x10\n"
         "    mov     %[dst_ptr], %[dst]\n"
         "    mul     %[fracstepN], vl, %[fracstep]\n"
         "    mul     %[dst_incr], vl, %[stride]\n"
@@ -259,7 +259,7 @@ static void R_DrawSpanKernel (byte* dst,
     __asm__ volatile(
         "    blt     %[count], 2f\n"
         "    add     %[count_left], %[count], #1\n"
-        "    cpuid   vl, z, z\n"
+        "    getsr   vl, #0x10\n"
         "    mov     %[dst_ptr], %[dst]\n"
         "    mul     %[xfracstepN], vl, %[xfracstep]\n"
         "    mul     %[yfracstepN], vl, %[yfracstep]\n"

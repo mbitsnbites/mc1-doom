@@ -269,7 +269,7 @@ static inline void V_DrawPatchScaledInternal (int x,
             byte* dst_ptr;
             __asm__ volatile(
                 "    ble     %[count], 2f\n"
-                "    cpuid   vl, z, z\n"
+                "    getsr   vl, #0x10\n"
                 "    mov     %[count_left], %[count]\n"
                 "    mov     %[dst_ptr], %[dst]\n"
                 "    mul     %[step_y_N], vl, %[step_y]\n"
@@ -357,7 +357,7 @@ static void V_DrawPatchInternal (int x,
             byte* src_ptr, dst_ptr;
             __asm__ volatile(
                 "    ble     %[count], 2f\n"
-                "    cpuid   vl, z, z\n"
+                "    getsr   vl, #0x10\n"
                 "    mov     %[count_left], %[count]\n"
                 "    mov     %[src_ptr], %[src]\n"
                 "    mov     %[dst_ptr], %[dst]\n"
