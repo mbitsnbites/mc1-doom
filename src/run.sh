@@ -7,5 +7,4 @@ if [ "$1" == "--profile" ] ; then
     PROFILE_ARGS="-P /tmp/symbols.csv"
 fi
 
-mr32sim -g -ga 1073744608 -gp 1073743556 -gd 8 -gw 320 -gh 180 ${PROFILE_ARGS} "$@" out/mc1doom.bin
-
+mr32sim -g -ga 0x40000ae0 -gp 0x400006c4 -gd 8 -gw 320 -gh 180 ${PROFILE_ARGS} "$@" out/mc1doom.bin
