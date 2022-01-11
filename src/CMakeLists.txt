@@ -148,13 +148,3 @@ target_link_libraries(mc1doom PRIVATE ${LIBS} ${SANITIZERS})
 set_property(TARGET mc1doom PROPERTY C_STANDARD 11)
 set_property(TARGET mc1doom PROPERTY C_EXTENSIONS OFF)
 
-# For MC1, we add a step to convert the ELF binary to a raw binary.
-if(MC1)
-  add_custom_command(OUTPUT mc1doom.bin
-                     DEPENDS mc1doom
-                     COMMAND mrisc32-elf-objcopy ARGS -O binary mc1doom mc1doom.bin
-                     COMMENT "Generate raw binary")
-  add_custom_target(mc1doom_raw ALL
-                    DEPENDS mc1doom.bin)
-endif()	
-
