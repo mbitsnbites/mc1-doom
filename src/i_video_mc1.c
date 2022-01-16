@@ -353,18 +353,9 @@ void I_FinishUpdate (void)
 void I_WaitVBL (int count)
 {
 #if 0
-    // TODO(m): Replace this with MC1 MMIO-based timing.
-    struct timeval t0, t;
-    long dt, waitt;
-
-    // Busy-wait for COUNT*1/60 s.
-    gettimeofday (&t0, NULL);
-    waitt = count * (1000000L / 60L);
-    do
-    {
-        gettimeofday (&t, NULL);
-        dt = (t.tv_sec - t0.tv_sec) * 1000000L + (t.tv_usec - t0.tv_usec);
-    } while (dt < waitt);
+    unsigned old_frame_no = GET_MMIO (VIDFRAMENO);
+    while (GET_MMIO (VIDFRAMENO) == old_frame_no)
+        ;
 #else
     // Run at max FPS - no wait.
     (void)count;
