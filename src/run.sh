@@ -17,6 +17,9 @@ while true ; do
     elif [ "$1" == "-f" ] ; then
         shift 1
         SIM_ARGS="${SIM_ARGS} -f"
+    elif [ "$1" == "-v" ] ; then
+        shift 1
+        SIM_ARGS="${SIM_ARGS} -v"
     else
         break
     fi
