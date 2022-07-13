@@ -29,7 +29,9 @@ $ cmake -G Ninja -DCMAKE_TOOLCHAIN_FILE=../mc1-toolchain.cmake -DCMAKE_BUILD_TYP
 $ ninja
 ```
 
-The resulting ELF binary is `src/out/mc1doom`.
+The resulting ELF binary is `src/out/mc1doom`, which is runnable in the MRISC32 simulator (use `run.sh` or `run.bat` to run it).
+
+To build for an MC1 computer target, add `-DMC1SDK_HOME=/path/to/mc1-sdk-installation` to the CMake options.
 
 ## Building for other platforms
 

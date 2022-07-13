@@ -92,7 +92,7 @@ static void I_MC1_CreateVCP (void)
     // Get the native video signal resolution and calculate the scaling factors.
     unsigned native_width = GET_MMIO (VIDWIDTH);
     unsigned native_height = GET_MMIO (VIDHEIGHT);
-    unsigned xincr = ((native_width - 1) << 16) / (SCREENWIDTH - 1);
+    unsigned xincr = ((SCREENWIDTH - 1) << 16) / (native_width - 1);
     unsigned yincr = ((native_height - 1) << 16) / (SCREENHEIGHT - 1);
 
     // Frame configuraiton.
@@ -124,10 +124,10 @@ static void I_MC1_CreateVCP (void)
     *palette = VCP_RTS;
 
     // Configure the main layer 1 VCP to call our VCP.
-    *((unsigned*)0x40000008) = VCP_JMP (s_vcp);
+    *((unsigned*)0x40000010) = VCP_JMP (s_vcp);
 
     // The layer 2 VCP should do nothing.
-    *((unsigned*)0x40000010) = VCP_WAITY (32767);
+    *((unsigned*)0x40000020) = VCP_WAITY (32767);
 }
 
 static int I_MC1_TranslateKey (unsigned keycode)
@@ -287,10 +287,6 @@ void I_InitGraphics (void)
     if (MC1_IsVRAMPtr (screens[0]))
         printf ("I_InitGraphics: Using VRAM for the pixel buffer\n");
 
-    I_MC1_CreateVCP ();
-
-    s_keyptr = GET_MMIO (KEYPTR);
-
     printf (
         "I_InitGraphics: Resolution = %d x %d\n"
         "                Framebuffer @ 0x%08x (%d)\n"
@@ -301,6 +297,10 @@ void I_InitGraphics (void)
         (unsigned)s_framebuffer,
         (unsigned)(s_palette + 4),
         (unsigned)(s_palette + 4));
+
+    I_MC1_CreateVCP ();
+
+    s_keyptr = GET_MMIO (KEYPTR);
 }
 
 void I_ShutdownGraphics (void)

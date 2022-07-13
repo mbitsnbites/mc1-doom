@@ -94,7 +94,20 @@ endif()
 if(MC1)
   list(APPEND DEFS -DMC1)
   list(APPEND OPTS -mcmodel=small)
-  list(APPEND LIBS -msim)
+  if(MC1SDK_HOME)
+    message("Building for running on an MC1 computer.")
+    list(APPEND DEFS -DMC1_SDK)
+    list(APPEND OPTS "-I${MC1SDK_HOME}/include")
+    list(APPEND LIBS
+         "-L${MC1SDK_HOME}/lib"
+         -mno-crt0
+         -lmc1crt0
+         -lmc1
+         "-T app-xram.ld")
+  else()
+    message("Building for running in the MRISC32 simulator.")
+    list(APPEND LIBS -msim)
+  endif()
 
   # Resolution for MC1.
   set(SCREENWIDTH 320)
