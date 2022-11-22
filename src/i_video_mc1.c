@@ -46,7 +46,8 @@ static void MC1_AllocInit (void)
     // We assume that the Doom binary is loaded into XRAM (0x80000000...), or
     // into the "ROM" (0x00000000...) for the simulator, and that it has
     // complete ownership of VRAM (0x40000000...).
-    s_vram_alloc_ptr = (byte*)0x40000100;
+    // Note: We leave space for boot programs (0x40000000-0x40007fff).
+    s_vram_alloc_ptr = (byte*)0x40008000;
     s_vram_alloc_end = (byte*)(0x40000000 + GET_MMIO (VRAMSIZE));
 }
 

@@ -101,7 +101,7 @@ if(MC1)
     list(APPEND LIBS
          "-L${MC1SDK_HOME}/lib"
          -mno-crt0
-         -lmc1crt0
+         -lmc1crt0-app
          -lmc1
          "-T app-xram.ld")
   else()
