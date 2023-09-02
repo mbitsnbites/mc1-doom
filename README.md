@@ -1,3 +1,5 @@
+## This repo has moved to: https://gitlab.com/mbitsnbites/mc1-doom
+
 ![MC1-DOOM Logo](logo/mc1-doom-logo.png)
 
 # MC1-DOOM
